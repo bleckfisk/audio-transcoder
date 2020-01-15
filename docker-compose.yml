@@ -1,0 +1,32 @@
+
+version: "3.3"
+  
+services:
+
+  localstack:
+    image: localstack/localstack
+    container_name: localstack
+    ports:
+      - "5000-5002:5000-5002"
+    environment:
+      SERVICES: "sqs:5000,s3:5001,sns:5002"
+      DEBUG: 1
+
+  transcoder:
+    image: bleckfisk/audiotranscoder
+    build:
+      context: .
+      args:
+        PIPENV_ARGS: "--dev"
+    depends_on:
+      - localstack
+    environment:
+      AWS_SQS_ENDPOINT_URL: "http://localstack:5000/"
+      AWS_S3_ENDPOINT_URL: "http://localstack:5001/"
+      AWS_SNS_ENDPOINT_URL: "http://localstack:5002/"
+      AWS_DEFAULT_REGION: "eu-west-1"
+      AWS_ACCESS_KEY_ID: "test"
+      AWS_SECRET_ACCESS_KEY: "test"
+      GCP_ENCODED_CREDENTIALS: "Zm9v"
+      SENTRY_ID: "1420486"
+      SENTRY_KEY: "dc5c4e1295bc4cc0a99e05ab9f998345"
