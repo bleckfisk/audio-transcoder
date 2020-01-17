@@ -2,6 +2,8 @@ import boto3
 from botocore.exceptions import DataNotFoundError
 import time
 import json
+import io
+import os
 
 from settings import (
     AWS_SQS_ENDPOINT_URL,
@@ -25,12 +27,22 @@ def check_sqs():
 
     try:
         queue = sqs_r.get_queue_by_name(QueueName="testqueue")
+    except Exception:
+        print("no queue yet...")
+        time.sleep(10)
+        check_sqs()
+
+    try:
         response = sqs_c.receive_message(
             QueueUrl=queue.url,
             MaxNumberOfMessages=5,
             VisibilityTimeout=123,
             WaitTimeSeconds=0,
         )
+        
+        if not response["Messages"]:
+            raise Exception("Queue found, but no messages...")
+
     except Exception:
         print("no response yet...")
         time.sleep(10)
@@ -53,21 +65,33 @@ def process_messages(response):
     if not approved_filetype:
         raise TypeError('The file type is not supported. Please provide .wav format.')
 
-    sound = download_file(data['input'])
-    convert(sound, data['output'])
+    file_content = get_file(data['input'])
+    convert(file_content, data['output'])
 
 
 def check_message_structure(body):
-    for object in body:
-        if not isinstance(object, dict):
-            return False
-        else:
-            for data in object:
-                if not isinstance(data, str):
-                    return False
+    #
+    # REWORK THIS!!!!
+    #
+    if isinstance(body["input"], dict):
+        if isinstance(body["input"]["file"], str):
+            if isinstance(body["input"]["type"], str):
+                if isinstance(body["output"], dict):
+                    if isinstance(body["output"]["file"], str):
+                        if isinstance(body["output"]["type"], str):
+                            return True
+                        else:
+                            return False
+                    else:
+                        return False
                 else:
-                    return True
-
+                    return False
+            else:
+                return False
+        else:
+            return False
+    else:
+        return False
 
 
 def check_type(filetype):
@@ -75,26 +99,39 @@ def check_type(filetype):
     return filetype == ".wav"
 
 
-def download_file(data):
+def get_file(data):
 
     s3_c = boto3.client('s3', endpoint_url=AWS_S3_ENDPOINT_URL)
 
+    bucket = "testbucket"
+
+    object_name = data["file"]
+
+    # file_name = data["file"] + data["type"]
+
     try:
-        sound = s3_c.download_file(
-            'testbucket',
-            f"{data['file']}",
-            f"{data['file']}{data['type']}"
-            )
+        response_object = s3_c.get_object(Bucket=bucket, Key=object_name)
+        file_content = response_object["Body"].read()
     except DataNotFoundError:
         print("Data not found")
 
-    return sound
+    return file_content
 
 
-def convert(sound, output):
+def convert(file_content, output):
     print("started converting...")
-    print(sound)
-    print(output)
+
+    # make a file handeler from downloaded content
+    handle = io.BytesIO(file_content)
+
+    # make audiosegment from pydub and convert to flac
+    audiosegment = AudioSegment.from_file(handle)
+    audiosegment.export("exported.flac", format="flac")
+
+    # after converted, upload to s3
+
+    # after upload to s3, remove
+    os.remove("exported.flac")
 
 
 if __name__ == '__main__':
