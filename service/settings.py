@@ -1,7 +1,7 @@
 
-AWS_SQS_ENDPOINT_URL = "http://localstack:5000/"
-AWS_S3_ENDPOINT_URL = "http://localstack:5001/"
-AWS_SNS_ENDPOINT_URL = "http://localstack:5002/"
+AWS_SQS_ENDPOINT_URL = "http://localhost:5000/"
+AWS_S3_ENDPOINT_URL = "http://localhost:5001/"
+AWS_SNS_ENDPOINT_URL = "http://localhost:5002/"
 AWS_DEFAULT_REGION = "eu-west-1"
 AWS_ACCESS_KEY_ID = "test"
 AWS_SECRET_ACCESS_KEY = "test"
