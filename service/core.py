@@ -2,13 +2,26 @@ import boto3
 from botocore.exceptions import DataNotFoundError
 import time
 import json
+
+from settings import (
+    AWS_SQS_ENDPOINT_URL,
+    AWS_S3_ENDPOINT_URL,
+    AWS_SNS_ENDPOINT_URL,
+    AWS_DEFAULT_REGION,
+    AWS_ACCESS_KEY_ID,
+    AWS_SECRET_ACCESS_KEY,
+    GCP_ENCODED_CREDENTIALS,
+    SENTRY_ID,
+    SENTRY_KEY,
+)
+
 from pydub import AudioSegment
 
 
 def check_sqs():
 
-    sqs_r = boto3.resource('sqs', endpoint_url="http://localstack:5000")
-    sqs_c = boto3.client('sqs', endpoint_url="http://localstack:5000")
+    sqs_r = boto3.resource('sqs', endpoint_url=AWS_SQS_ENDPOINT_URL)
+    sqs_c = boto3.client('sqs', endpoint_url=AWS_SQS_ENDPOINT_URL)
 
     try:
         queue = sqs_r.get_queue_by_name(QueueName="testqueue")
@@ -64,7 +77,7 @@ def check_type(filetype):
 
 def download_file(data):
 
-    s3_c = boto3.client('s3', endpoint_url="http://localstack:5001")
+    s3_c = boto3.client('s3', endpoint_url=AWS_S3_ENDPOINT_URL)
 
     try:
         sound = s3_c.download_file(
