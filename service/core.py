@@ -31,7 +31,7 @@ def check_sqs():
         queue = sqs_r.get_queue_by_name(QueueName="testqueue")
     except Exception:
         print("no queue yet...")
-        time.sleep(10)
+        time.sleep(15)
         check_sqs()
 
     try:
@@ -47,7 +47,7 @@ def check_sqs():
 
     except Exception:
         print("no response yet...")
-        time.sleep(10)
+        time.sleep(15)
         check_sqs()
 
     process_messages(response)
@@ -98,7 +98,7 @@ def check_message_structure(body):
 
 def check_type(filetype):
     # takes filetype as param and returns true if it's the correct one
-    return filetype == ".wav"
+    return filetype == "wav"
 
 
 def get_file(data):
@@ -119,14 +119,15 @@ def get_file(data):
 def convert(file_content, output):
     print("started converting...")
 
-    file_name = f"{output['file']}{output['type']}"
+    file_name = output['file']
+    file_type = output['type']
 
     # make a file handeler from downloaded content
     handle = io.BytesIO(file_content)
 
     # make audiosegment from pydub and convert to flac
     audiosegment = AudioSegment.from_file(handle)
-    audiosegment.export(file_name, format="flac")
+    audiosegment.export(file_name, format=file_type)
 
     # after converted, upload to s3
     upload_converted(file_name)
@@ -136,13 +137,11 @@ def convert(file_content, output):
 
 
 def upload_converted(file_name):
-    dir_path = os.path.dirname(os.path.realpath(__file__))
-    sound = f"{dir_path}/{file_name}"
-    s3_c.upload_file(sound, BUCKET_NAME, "/flacs/test_sample_loop")
+    s3_c.upload_file(file_name, BUCKET_NAME, "flacs/test_sample_loop")
 
 
 def remove_local_files(file_name):
-    print(file_name)
+    print(F"REMOVING {file_name} FROM OS")
     os.remove(file_name)
 
 
