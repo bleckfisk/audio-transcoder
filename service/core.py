@@ -13,9 +13,6 @@ from settings import (
     AWS_ACCESS_KEY_ID,
     AWS_SECRET_ACCESS_KEY,
     GCP_ENCODED_CREDENTIALS,
-    SENTRY_ID,
-    SENTRY_KEY,
-    BUCKET_NAME,
 )
 
 from pydub import AudioSegment
@@ -41,7 +38,7 @@ def check_sqs():
             VisibilityTimeout=123,
             WaitTimeSeconds=0,
         )
-        
+
         if not response["Messages"]:
             raise Exception("Queue found, but no messages...")
 
@@ -65,7 +62,7 @@ def process_messages(response):
 
     approved_filetype = check_type(data['input']['type'])
     if not approved_filetype:
-        raise TypeError('The file type is not supported. Please provide .wav format.')
+        raise TypeError('File type is unsupported. Please provide .wav type.')
 
     file_content = get_file(data['input'])
     convert(file_content, data['output'])
@@ -104,11 +101,10 @@ def check_type(filetype):
 def get_file(data):
 
     object_name = data["file"]
-
-    # file_name = data["file"] + data["type"]
+    bucket_name = data["input"]["bucket"]
 
     try:
-        response_object = s3_c.get_object(Bucket=BUCKET_NAME, Key=object_name)
+        response_object = s3_c.get_object(Bucket=bucket_name, Key=object_name)
         file_content = response_object["Body"].read()
     except DataNotFoundError:
         print("Data not found")
@@ -121,6 +117,7 @@ def convert(file_content, output):
 
     file_name = output['file']
     file_type = output['type']
+    bucket_name = output['bucket']
 
     # make a file handeler from downloaded content
     handle = io.BytesIO(file_content)
@@ -130,14 +127,19 @@ def convert(file_content, output):
     audiosegment.export(file_name, format=file_type)
 
     # after converted, upload to s3
-    upload_converted(file_name)
+    upload_converted(file_name, bucket_name)
 
     # after upload to s3, remove
     remove_local_files(file_name)
 
 
-def upload_converted(file_name):
-    s3_c.upload_file(file_name, BUCKET_NAME, "flacs/test_sample_loop")
+def upload_converted(file_name, bucket_name):
+    s3_c.upload_file(file_name, bucket_name, f"flacs/{file_name}")
+
+
+def notify_sns():
+    # publish notification to topic
+    pass
 
 
 def remove_local_files(file_name):
