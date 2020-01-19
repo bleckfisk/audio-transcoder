@@ -15,15 +15,17 @@ from settings import (
     GCP_ENCODED_CREDENTIALS,
     SENTRY_ID,
     SENTRY_KEY,
+    BUCKET_NAME,
 )
 
 from pydub import AudioSegment
 
+sqs_r = boto3.resource('sqs', endpoint_url=AWS_SQS_ENDPOINT_URL)
+sqs_c = boto3.client('sqs', endpoint_url=AWS_SQS_ENDPOINT_URL)
+s3_c = boto3.client('s3', endpoint_url=AWS_S3_ENDPOINT_URL)
+
 
 def check_sqs():
-
-    sqs_r = boto3.resource('sqs', endpoint_url=AWS_SQS_ENDPOINT_URL)
-    sqs_c = boto3.client('sqs', endpoint_url=AWS_SQS_ENDPOINT_URL)
 
     try:
         queue = sqs_r.get_queue_by_name(QueueName="testqueue")
@@ -101,16 +103,12 @@ def check_type(filetype):
 
 def get_file(data):
 
-    s3_c = boto3.client('s3', endpoint_url=AWS_S3_ENDPOINT_URL)
-
-    bucket = "testbucket"
-
     object_name = data["file"]
 
     # file_name = data["file"] + data["type"]
 
     try:
-        response_object = s3_c.get_object(Bucket=bucket, Key=object_name)
+        response_object = s3_c.get_object(Bucket=BUCKET_NAME, Key=object_name)
         file_content = response_object["Body"].read()
     except DataNotFoundError:
         print("Data not found")
@@ -121,19 +119,32 @@ def get_file(data):
 def convert(file_content, output):
     print("started converting...")
 
+    file_name = f"{output['file']}{output['type']}"
+
     # make a file handeler from downloaded content
     handle = io.BytesIO(file_content)
 
     # make audiosegment from pydub and convert to flac
     audiosegment = AudioSegment.from_file(handle)
-    audiosegment.export("exported.flac", format="flac")
+    audiosegment.export(file_name, format="flac")
 
     # after converted, upload to s3
+    upload_converted(file_name)
 
     # after upload to s3, remove
-    os.remove("exported.flac")
+    remove_local_files(file_name)
+
+
+def upload_converted(file_name):
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    sound = f"{dir_path}/{file_name}"
+    s3_c.upload_file(sound, BUCKET_NAME, "/flacs/test_sample_loop")
+
+
+def remove_local_files(file_name):
+    print(file_name)
+    os.remove(file_name)
 
 
 if __name__ == '__main__':
-
     check_sqs()
