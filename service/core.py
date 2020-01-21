@@ -1,4 +1,4 @@
-import boto3
+
 from botocore.exceptions import DataNotFoundError
 import time
 import json
@@ -7,25 +7,35 @@ import os
 
 from settings import (
     AWS_SQS_ENDPOINT_URL,
+    AWS_SQS_QUEUE_NAME,
     AWS_S3_ENDPOINT_URL,
     AWS_SNS_ENDPOINT_URL,
-    AWS_DEFAULT_REGION,
+    AWS_SNS_TOPIC_ARN,
     AWS_ACCESS_KEY_ID,
     AWS_SECRET_ACCESS_KEY,
-    GCP_ENCODED_CREDENTIALS,
+    AWS_DEFAULT_REGION
 )
 
 from pydub import AudioSegment
 
-sqs_r = boto3.resource('sqs', endpoint_url=AWS_SQS_ENDPOINT_URL)
-sqs_c = boto3.client('sqs', endpoint_url=AWS_SQS_ENDPOINT_URL)
-s3_c = boto3.client('s3', endpoint_url=AWS_S3_ENDPOINT_URL)
+from clients import (
+    sqs_r,
+    sqs_c,
+    sns_c,
+    s3_c
+)
+
+
+def main():
+    check_sqs()
+    
+    notify_sns()
 
 
 def check_sqs():
 
     try:
-        queue = sqs_r.get_queue_by_name(QueueName="testqueue")
+        queue = sqs_r.get_queue_by_name(QueueName=AWS_SQS_QUEUE_NAME)
     except Exception:
         print("no queue yet...")
         time.sleep(15)
@@ -101,7 +111,7 @@ def check_type(filetype):
 def get_file(data):
 
     object_name = data["file"]
-    bucket_name = data["input"]["bucket"]
+    bucket_name = data["bucket"]
 
     try:
         response_object = s3_c.get_object(Bucket=bucket_name, Key=object_name)
@@ -139,7 +149,10 @@ def upload_converted(file_name, bucket_name):
 
 def notify_sns():
     # publish notification to topic
-    pass
+    sns_c.publish(
+        TopicArn=AWS_SNS_TOPIC_ARN,
+        Message="SUCCESS!!!!"
+    )
 
 
 def remove_local_files(file_name):
@@ -148,4 +161,5 @@ def remove_local_files(file_name):
 
 
 if __name__ == '__main__':
-    check_sqs()
+    main()
+    
