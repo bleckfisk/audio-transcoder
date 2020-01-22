@@ -1,19 +1,16 @@
 
-from botocore.exceptions import DataNotFoundError
+from botocore.exceptions import ClientError
+from boto3.exceptions import S3UploadFailedError
+
 import time
 import json
 import io
 import os
 
 from settings import (
-    AWS_SQS_ENDPOINT_URL,
     AWS_SQS_QUEUE_NAME,
-    AWS_S3_ENDPOINT_URL,
-    AWS_SNS_ENDPOINT_URL,
     AWS_SNS_TOPIC_ARN,
-    AWS_ACCESS_KEY_ID,
-    AWS_SECRET_ACCESS_KEY,
-    AWS_DEFAULT_REGION
+    SLEEP_TIMER
 )
 
 from pydub import AudioSegment
@@ -25,22 +22,72 @@ from clients import (
     s3_c
 )
 
+from validators import (
+    check_message_structure,
+    check_type
+)
+
+
+def retry(SLEEP_TIMER):
+    time.sleep(SLEEP_TIMER)
+    main()
+
 
 def main():
-    check_sqs()
-    
-    notify_sns()
-
-
-def check_sqs():
+    try:
+        global queue
+        queue = get_queue()
+    except ClientError:
+        print(f"Queue not found. Retrying in {SLEEP_TIMER}")
+        retry(SLEEP_TIMER)
 
     try:
-        queue = sqs_r.get_queue_by_name(QueueName=AWS_SQS_QUEUE_NAME)
-    except Exception:
-        print("no queue yet...")
-        time.sleep(15)
-        check_sqs()
+        global messages
+        messages = get_messages(queue)
+    except KeyError:
+        print(f"No Message was found, retrying in {SLEEP_TIMER}")
+        retry(SLEEP_TIMER)
 
+    try:
+        global data
+        data = process_messages(messages)
+    except KeyError:
+        print(f"The input structure is unsupported, retrying in {SLEEP_TIMER}")
+        retry(SLEEP_TIMER)
+
+    try:
+        global file_content
+        file_content = get_file(data["input"])
+    except ClientError:
+        print("The bucket was not found")
+        retry(SLEEP_TIMER)
+    except KeyError:
+        print("The file was not found in given bucket.")
+        retry(SLEEP_TIMER)
+
+    try:
+        process(file_content, data["output"])
+    except S3UploadFailedError:
+        print("Upload failed, target bucket not found")
+        retry(SLEEP_TIMER)
+
+    try:
+        notify_sns()
+        print("successfully notified SNS")
+    except ClientError:
+        print("The given topic arn was not found.")
+        retry(SLEEP_TIMER)
+
+
+def get_queue():
+    try:
+        return sqs_r.get_queue_by_name(QueueName=AWS_SQS_QUEUE_NAME) 
+    except ClientError as e:
+        if e.response["Error"]["Code"] == "AWS.SimpleQueueService.NonExistentQueue":
+            raise
+
+
+def get_messages(queue):
     try:
         response = sqs_c.receive_message(
             QueueUrl=queue.url,
@@ -48,81 +95,51 @@ def check_sqs():
             VisibilityTimeout=123,
             WaitTimeSeconds=0,
         )
-
-        if not response["Messages"]:
-            raise Exception("Queue found, but no messages...")
-
-    except Exception:
-        print("no response yet...")
-        time.sleep(15)
-        check_sqs()
-
-    process_messages(response)
+        if "Messages" in response:
+            return response["Messages"]
+        else:
+            raise KeyError
+    except KeyError:
+        raise
 
 
-def process_messages(response):
+def process_messages(messages):
     print("processing...")
     # acceps a response checks the format of the message
     # should call check_type() and other validation functions
-    data = json.loads(response['Messages'][0]['Body'])
+    data = json.loads(messages[0]['Body'])
+    try:
+        approved_structure = check_message_structure(data)
+        if not approved_structure:
+            raise TypeError('The data structure in message is not supported')
 
-    approved_structure = check_message_structure(data)
-    if not approved_structure:
-        raise TypeError('The data structure in message is not supported')
+        approved_filetype = check_type(data['input']['type'])
+        if not approved_filetype:
+            raise TypeError('File format not supported')
 
-    approved_filetype = check_type(data['input']['type'])
-    if not approved_filetype:
-        raise TypeError('File type is unsupported. Please provide .wav type.')
+        if approved_structure and approved_filetype:
+            return data
 
-    file_content = get_file(data['input'])
-    convert(file_content, data['output'])
-
-
-def check_message_structure(body):
-    #
-    # REWORK THIS!!!!
-    #
-    if isinstance(body["input"], dict):
-        if isinstance(body["input"]["file"], str):
-            if isinstance(body["input"]["type"], str):
-                if isinstance(body["output"], dict):
-                    if isinstance(body["output"]["file"], str):
-                        if isinstance(body["output"]["type"], str):
-                            return True
-                        else:
-                            return False
-                    else:
-                        return False
-                else:
-                    return False
-            else:
-                return False
-        else:
-            return False
-    else:
-        return False
-
-
-def check_type(filetype):
-    # takes filetype as param and returns true if it's the correct one
-    return filetype == "wav"
+    except TypeError:
+        raise
 
 
 def get_file(data):
 
     object_name = data["file"]
     bucket_name = data["bucket"]
-
     try:
         response_object = s3_c.get_object(Bucket=bucket_name, Key=object_name)
         file_content = response_object["Body"].read()
-    except DataNotFoundError:
-        print("Data not found")
+        return file_content
+    except ClientError as e:
+        if e.response["Error"]["Code"] == "NoSuchBucket":
+            raise
+        if e.response["Error"]["Code"] == "NoSuchKey":
+            raise KeyError
 
-    return file_content
 
-
-def convert(file_content, output):
+def process(file_content, output):
     print("started converting...")
 
     file_name = output['file']
@@ -137,22 +154,30 @@ def convert(file_content, output):
     audiosegment.export(file_name, format=file_type)
 
     # after converted, upload to s3
-    upload_converted(file_name, bucket_name)
-
+    try:
+        upload_converted(file_name, bucket_name)
+    except S3UploadFailedError:
+        remove_local_files(file_name)
+        raise
     # after upload to s3, remove
     remove_local_files(file_name)
 
 
 def upload_converted(file_name, bucket_name):
+
     s3_c.upload_file(file_name, bucket_name, f"flacs/{file_name}")
 
 
 def notify_sns():
     # publish notification to topic
-    sns_c.publish(
-        TopicArn=AWS_SNS_TOPIC_ARN,
-        Message="SUCCESS!!!!"
-    )
+    try:
+        sns_c.publish(
+            TopicArn=AWS_SNS_TOPIC_ARN,
+            Message="SUCCESS!!!!"
+        )
+    except ClientError as e:
+        if e.response["Error"]["Code"] == "NotFound":
+            raise
 
 
 def remove_local_files(file_name):
@@ -162,4 +187,3 @@ def remove_local_files(file_name):
 
 if __name__ == '__main__':
     main()
-    
