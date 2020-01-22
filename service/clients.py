@@ -1,10 +1,9 @@
 import boto3
+
 from settings import (
     AWS_SQS_ENDPOINT_URL,
-    AWS_SQS_QUEUE_NAME,
     AWS_S3_ENDPOINT_URL,
     AWS_SNS_ENDPOINT_URL,
-    AWS_SNS_TOPIC_ARN,
     AWS_ACCESS_KEY_ID,
     AWS_SECRET_ACCESS_KEY,
     AWS_DEFAULT_REGION
@@ -18,7 +17,6 @@ sqs_r = boto3.resource(
     aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
     region_name=AWS_DEFAULT_REGION
     )
-
 
 sqs_c = boto3.client(
     'sqs',
