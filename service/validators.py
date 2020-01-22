@@ -1,6 +1,6 @@
 
 """
-Validators to check the input data is correct data types. 
+Validators to check the input data is correct data types.
 
 NOTE TO SELF:
 There are better ways to do this.
