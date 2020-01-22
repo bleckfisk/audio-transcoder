@@ -11,6 +11,7 @@ flake8 = "*"
 pydub = "*"
 boto3 = "*"
 awscli = "*"
+pytest = "*"
 
 [requires]
 python_version = "3.7"
