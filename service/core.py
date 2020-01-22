@@ -1,21 +1,9 @@
 
 from botocore.exceptions import ClientError
 from boto3.exceptions import S3UploadFailedError
-
 import time
 import json
-
-from settings import (
-    AWS_SQS_QUEUE_NAME,
-    AWS_SNS_TOPIC_ARN,
-    SLEEP_TIMER
-)
-
-from clients import (
-    sqs_r,
-    sqs_c,
-    sns_c,
-)
+from settings import SLEEP_TIMER
 
 from validators import (
     check_message_structure,
@@ -25,6 +13,12 @@ from validators import (
 from transcoder import (
     get_file,
     transcode
+)
+
+from aws_boto3 import (
+    get_queue,
+    get_messages,
+    notify_sns
 )
 
 
@@ -79,30 +73,6 @@ def main():
         retry(SLEEP_TIMER)
 
 
-def get_queue():
-    try:
-        return sqs_r.get_queue_by_name(QueueName=AWS_SQS_QUEUE_NAME) 
-    except ClientError as e:
-        if e.response["Error"]["Code"] == "AWS.SimpleQueueService.NonExistentQueue":
-            raise
-
-
-def get_messages(queue):
-    try:
-        response = sqs_c.receive_message(
-            QueueUrl=queue.url,
-            MaxNumberOfMessages=5,
-            VisibilityTimeout=123,
-            WaitTimeSeconds=0,
-        )
-        if "Messages" in response:
-            return response["Messages"]
-        else:
-            raise KeyError
-    except KeyError:
-        raise
-
-
 def process_messages(messages):
     print("processing...")
     # acceps a response checks the format of the message
@@ -122,18 +92,6 @@ def process_messages(messages):
 
     except TypeError:
         raise
-
-
-def notify_sns():
-    # publish notification to topic
-    try:
-        sns_c.publish(
-            TopicArn=AWS_SNS_TOPIC_ARN,
-            Message="SUCCESS!!!!"
-        )
-    except ClientError as e:
-        if e.response["Error"]["Code"] == "NotFound":
-            raise
 
 
 if __name__ == '__main__':
