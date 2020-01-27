@@ -45,4 +45,3 @@ def notify_sns():
     except ClientError as e:
         if e.response["Error"]["Code"] == "NotFound":
             raise
-

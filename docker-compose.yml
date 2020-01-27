@@ -7,9 +7,9 @@ services:
     image: localstack/localstack
     container_name: localstack
     ports:
-      - "5000-5002:5000-5002"
+      - "4000-4002:4000-4002"
     environment:
-      SERVICES: "sqs:5000,s3:5001,sns:5002"
+      SERVICES: "sqs:4000,s3:4001,sns:4002"
       DEBUG: 1
 
   transcoder:

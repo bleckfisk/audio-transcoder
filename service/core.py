@@ -2,12 +2,10 @@
 from botocore.exceptions import ClientError
 from boto3.exceptions import S3UploadFailedError
 import time
-import json
 from settings import SLEEP_TIMER
 
 from validators import (
-    check_message_structure,
-    check_type
+    process_messages
 )
 
 from transcoder import (
@@ -71,27 +69,6 @@ def main():
     except ClientError:
         print("The given topic arn was not found.")
         retry(SLEEP_TIMER)
-
-
-def process_messages(messages):
-    print("processing...")
-    # acceps a response checks the format of the message
-    # should call check_type() and other validation functions
-    data = json.loads(messages[0]['Body'])
-    try:
-        approved_structure = check_message_structure(data)
-        if not approved_structure:
-            raise TypeError('The data structure in message is not supported')
-
-        approved_filetype = check_type(data['input']['type'])
-        if not approved_filetype:
-            raise TypeError('File format not supported')
-
-        if approved_structure and approved_filetype:
-            return data
-
-    except TypeError:
-        raise
 
 
 if __name__ == '__main__':

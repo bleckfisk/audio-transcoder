@@ -2,7 +2,7 @@ from service.validators import (
     check_input_structure,
     check_output_structure,
     check_message_structure,
-    check_type
+    check_type,
 )
 
 
