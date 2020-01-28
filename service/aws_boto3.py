@@ -27,7 +27,7 @@ def listen_sqs_queue(resource, queue_name, process_messages):
         messages = resource.meta.client.receive_message(
             QueueUrl=queue.get("QueueUrl"),
             MaxNumberOfMessages=1,
-            WaitTimeSeconds=0
+            WaitTimeSeconds=10
         )
         if 'Messages' in messages:
             print("There are messages")
