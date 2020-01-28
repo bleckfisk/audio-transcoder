@@ -14,17 +14,19 @@ def process_messages(messages):
     print("processing...")
     # acceps a response checks the format of the message
     # should call check_type() and other validation functions
-    message = json.loads(messages[0]['Body'])
+    message = json.loads(messages['Messages'][0]['Body'])
 
     if not validate_message(message):
         raise Exception(f"Invalid Message: {message}")
 
     file = download(create_s3_resource(), message["input"])
-    converted = transcode(file, message["output"])
+    transcoded_file_name = transcode(file, message["output"])
 
     try:
-        upload(create_s3_resource(), converted, message["output"])
+        upload(create_s3_resource(), transcoded_file_name, message["output"])
+        return_code = False
     except Exception as e:
+        print(e)
         error = e
         return_code = True
 
@@ -36,22 +38,24 @@ def process_messages(messages):
         error if return_code else None
     )
 
+    remove_local_files(transcoded_file_name)
 
-def upload(resource, converted, output):
+
+def upload(resource, transcoded_file_name, output):
     # upload converted to output["bucket"]
-
     bucket = output["bucket"]
     object_name = f"{output['file_type']}s/{output['file_name']}"
+
     resource.meta.client.upload_file(
-        converted,
-        bucket,
-        object_name
+        Filename=transcoded_file_name,
+        Bucket=bucket,
+        Key=object_name,
     )
 
 
-def remove_local_files(converted):
-    print(F"REMOVING {converted} FROM OS")
-    os.remove(converted)
+def remove_local_files(file):
+    print(F"REMOVING {file} FROM OS")
+    os.remove(file)
 
 
 def download(resource, input):
@@ -59,14 +63,17 @@ def download(resource, input):
     bucket_name = input['bucket']
     file_name = input['file_name']
 
-    file = resource.meta.client.get_object(
+    file_object = resource.meta.client.get_object(
         Bucket=bucket_name,
         Key=file_name
-    ).read()
+    )
+
+    file = file_object["Body"].read()
 
     # make a file handeler from downloaded content
     tempFile = io.BytesIO(file)
     # handle the file and return it
+    print("successfully downloaded and returned file")
     return tempFile
 
 
@@ -84,3 +91,5 @@ def callback(file_name, from_type, to_type, status, errors=None):
             }
         ),
     )
+
+    print("Successfully published to sns")
