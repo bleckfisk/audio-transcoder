@@ -1,98 +1,97 @@
-
-from botocore.exceptions import ClientError
-from boto3.exceptions import S3UploadFailedError
-import time
+import os
+import io
 import json
-from settings import SLEEP_TIMER
-
-from validators import (
-    check_message_structure,
-    check_type
+from .validators import validate_message, check_error_list as errorcheck
+from .aws_boto3 import create_s3_resource, create_sns_resource, publish_sns
+from .settings import (
+    AWS_SNS_TOPIC_ARN
 )
-
-from transcoder import (
-    get_file,
-    transcode
-)
-
-from aws_boto3 import (
-    get_queue,
-    get_messages,
-    notify_sns
-)
-
-
-def retry(SLEEP_TIMER):
-    time.sleep(SLEEP_TIMER)
-    main()
-
-
-def main():
-    try:
-        global queue
-        queue = get_queue()
-    except ClientError:
-        print(f"Queue not found. Retrying in {SLEEP_TIMER}")
-        retry(SLEEP_TIMER)
-
-    try:
-        global messages
-        messages = get_messages(queue)
-    except KeyError:
-        print(f"No Message was found, retrying in {SLEEP_TIMER}")
-        retry(SLEEP_TIMER)
-
-    try:
-        global data
-        data = process_messages(messages)
-    except KeyError:
-        print(f"The input structure is unsupported, retrying in {SLEEP_TIMER}")
-        retry(SLEEP_TIMER)
-
-    try:
-        global file_content
-        file_content = get_file(data["input"])
-    except ClientError:
-        print("The bucket was not found")
-        retry(SLEEP_TIMER)
-    except KeyError:
-        print("The file was not found in given bucket.")
-        retry(SLEEP_TIMER)
-
-    try:
-        transcode(file_content, data["output"])
-    except S3UploadFailedError:
-        print("Upload failed, target bucket not found")
-        retry(SLEEP_TIMER)
-
-    try:
-        notify_sns()
-        print("successfully notified SNS")
-    except ClientError:
-        print("The given topic arn was not found.")
-        retry(SLEEP_TIMER)
+from .transcoder import transcode
 
 
 def process_messages(messages):
-    print("processing...")
+    print("processing message...")
     # acceps a response checks the format of the message
     # should call check_type() and other validation functions
-    data = json.loads(messages[0]['Body'])
-    try:
-        approved_structure = check_message_structure(data)
-        if not approved_structure:
-            raise TypeError('The data structure in message is not supported')
+    message = json.loads(messages['Messages'][0]['Body'])
 
-        approved_filetype = check_type(data['input']['type'])
-        if not approved_filetype:
-            raise TypeError('File format not supported')
+    if not validate_message(message):
+        raise Exception(f"Invalid Message: {message}")
 
-        if approved_structure and approved_filetype:
-            return data
+    errors = []
 
-    except TypeError:
-        raise
+    for output in message["outputs"]:
+        file = download(create_s3_resource(), message["input"])
+        transcode(file, output)
+
+        try:
+            upload(create_s3_resource(), output)
+        except Exception as e:
+            errors.append(e)
+
+    callback(
+        message["input"],
+        message["outputs"],
+        "error" if errorcheck(errors) else "success",
+        errors if errorcheck(errors) else None
+    )
+
+    for output in message["outputs"]:
+        remove_local_files(output["key"])
+
+    return messages['Messages'][0]['ReceiptHandle']
 
 
-if __name__ == '__main__':
-    main()
+def upload(resource, output):
+    # upload converted to output["bucket"]
+    bucket = output["bucket"]
+    key = output["key"]
+
+    resource.meta.client.upload_file(
+        Filename=key,
+        Bucket=bucket,
+        Key=key,
+    )
+
+
+def remove_local_files(file):
+    print(F"REMOVING {file} FROM OS")
+    os.remove(file)
+
+
+def download(resource, input):
+    # connect to input["bucket"] and download input["file_name"]
+    bucket_name = input['bucket']
+    file_name = input['key']
+
+    file_object = resource.meta.client.get_object(
+        Bucket=bucket_name,
+        Key=file_name
+    )
+
+    file = file_object["Body"].read()
+
+    # make a file handeler from downloaded content
+    tempFile = io.BytesIO(file)
+
+    # handle the file and return it
+    print("successfully downloaded, returning file now")
+    return tempFile
+
+
+def callback(input, outputs, status, errors=None):
+
+    publish_sns(
+        create_sns_resource(),
+        AWS_SNS_TOPIC_ARN,
+        json.dumps(
+            {
+                "from_type": input,
+                "to_type": outputs,
+                "status": status,
+                "errors": errors,
+            }
+        ),
+    )
+
+    print("Successfully published to sns")
