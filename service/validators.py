@@ -19,8 +19,3 @@ def validate_input_keys(input):
 
 def validate_output_keys(output):
     return list(output.keys()) == ["file_name", "file_type", "bucket"]
-
-
-def check_type(filetype):
-    # takes filetype as param and returns true if it's the correct one
-    return filetype == "wav"
