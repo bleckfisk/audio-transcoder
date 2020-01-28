@@ -1,13 +1,13 @@
 import os
 import io
 import json
-from validators import validate_message
-from aws_boto3 import create_s3_resource, create_sns_resource, publish_sns
-from settings import (
+from .validators import validate_message
+from .aws_boto3 import create_s3_resource, create_sns_resource, publish_sns
+from .settings import (
     AWS_SNS_TOPIC_ARN
 )
 
-from transcoder import transcode
+from .transcoder import transcode
 
 
 def process_messages(messages):

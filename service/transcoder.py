@@ -1,8 +1,4 @@
-import io
-import os
 from pydub import AudioSegment
-from clients import s3_c
-from boto3.exceptions import S3UploadFailedError
 
 
 def transcode(file, output):
@@ -16,7 +12,8 @@ def transcode(file, output):
     return converted
 
 
-def upload_converted(file_name, bucket_name):
-    s3_c.upload_file(file_name, bucket_name, f"flacs/{file_name}")
-
-
+def upload_converted(resource, file_name, bucket_name):
+    resource.meta.client.upload_file(
+        file_name,
+        bucket_name,
+        f"flacs/{file_name}")
