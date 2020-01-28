@@ -24,18 +24,17 @@ def process_messages(messages):
 
     try:
         upload(create_s3_resource(), transcoded_file_name, message["output"])
-        return_code = False
+        errors_exists = False
     except Exception as e:
-        print(e)
+        errors_exists = True
         error = e
-        return_code = True
 
     callback(
         message["output"]["file_name"],
         message["input"]["file_type"],
         message["output"]["file_type"],
-        "error" if return_code else "success",
-        error if return_code else None
+        "error" if errors_exists else "success",
+        error if errors_exists else None
     )
 
     remove_local_files(transcoded_file_name)
@@ -73,11 +72,12 @@ def download(resource, input):
     # make a file handeler from downloaded content
     tempFile = io.BytesIO(file)
     # handle the file and return it
-    print("successfully downloaded and returned file")
+    print("successfully downloaded, returning file now")
     return tempFile
 
 
 def callback(file_name, from_type, to_type, status, errors=None):
+
     publish_sns(
         create_sns_resource(),
         AWS_SNS_TOPIC_ARN,
