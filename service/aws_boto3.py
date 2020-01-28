@@ -31,7 +31,9 @@ def listen_sqs_queue(resource, queue_name, process_messages):
         )
         if 'Messages' in messages:
             print("There are messages, collected 1 and processing it now...")
-            process_messages(messages)
+            ReceiptHandle = process_messages(messages)
+
+        delete_message(create_sqs_resource(), queue, ReceiptHandle)
 
 
 def publish_sns(resource, topicarn, message):
@@ -44,3 +46,10 @@ def publish_sns(resource, topicarn, message):
     except ClientError as e:
         if e.response["Error"]["Code"] == "NotFound":
             raise
+
+
+def delete_message(resource, queue, ReceiptHandle):
+    resource.meta.client.delete_message(
+        QueueUrl=queue.get("QueueUrl"),
+        ReceiptHandle=ReceiptHandle
+        )

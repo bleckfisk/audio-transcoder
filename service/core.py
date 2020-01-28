@@ -39,6 +39,8 @@ def process_messages(messages):
     for output in message["outputs"]:
         remove_local_files(output["key"])
 
+    return messages['Messages'][0]['ReceiptHandle']
+
 
 def upload(resource, output):
     # upload converted to output["bucket"]
