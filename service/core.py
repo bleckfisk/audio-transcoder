@@ -11,7 +11,7 @@ from .transcoder import transcode
 
 
 def process_messages(messages):
-    print("processing...")
+    print("processing message...")
     # acceps a response checks the format of the message
     # should call check_type() and other validation functions
     message = json.loads(messages['Messages'][0]['Body'])

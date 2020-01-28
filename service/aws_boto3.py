@@ -23,14 +23,14 @@ def listen_sqs_queue(resource, queue_name, process_messages):
     queue = resource.meta.client.create_queue(QueueName=queue_name)
 
     while True:
-        print("neverending story, nanana nanana nanana")
+        print("listening for messages in queue...")
         messages = resource.meta.client.receive_message(
             QueueUrl=queue.get("QueueUrl"),
             MaxNumberOfMessages=1,
             WaitTimeSeconds=10
         )
         if 'Messages' in messages:
-            print("There are messages")
+            print("There are messages, collected 1 and processing it now...")
             process_messages(messages)
 
 
