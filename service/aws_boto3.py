@@ -32,8 +32,7 @@ def listen_sqs_queue(resource, queue_name, process_messages):
         if 'Messages' in messages:
             print("There are messages, collected 1 and processing it now...")
             ReceiptHandle = process_messages(messages)
-
-        delete_message(create_sqs_resource(), queue, ReceiptHandle)
+            delete_message(create_sqs_resource(), queue, ReceiptHandle)
 
 
 def publish_sns(resource, topicarn, message):
