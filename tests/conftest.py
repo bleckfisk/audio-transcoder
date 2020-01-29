@@ -51,6 +51,7 @@ def sqs_queue():
 
     yield queue
 
+
 @pytest.fixture
 def sqs_queue_name():
     from service.aws_boto3 import create_sqs_resource
