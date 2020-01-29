@@ -2,7 +2,6 @@ from botocore.exceptions import ClientError
 import pytest
 from uuid import uuid4
 
-
 @pytest.fixture
 def s3_bucket():
     from service.aws_boto3 import create_s3_resource
@@ -17,3 +16,14 @@ def s3_bucket():
     yield bucket
     bucket.objects.all().delete()
     bucket.delete()
+
+
+@pytest.fixture
+def sns_topic_arn():
+    from service.aws_boto3 import create_sns_resource
+
+    resource = create_sns_resource()
+    topic_name = str(uuid4())
+    response = resource.meta.client.create_topic(Name=topic_name)
+
+    yield response["TopicArn"]
