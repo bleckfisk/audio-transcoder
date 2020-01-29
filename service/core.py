@@ -92,5 +92,5 @@ def callback(topic_arn, input, outputs, status, errors=None):
             }
         ),
     )
-    
+
     print("Successfully published to sns")

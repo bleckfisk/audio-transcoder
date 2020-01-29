@@ -2,6 +2,7 @@ from botocore.exceptions import ClientError
 import pytest
 from uuid import uuid4
 
+
 @pytest.fixture
 def s3_bucket():
     from service.aws_boto3 import create_s3_resource

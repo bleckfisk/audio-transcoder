@@ -4,7 +4,6 @@ from service.core import upload, download, callback
 from uuid import uuid4
 from service.aws_boto3 import create_s3_resource
 from botocore.exceptions import ClientError
-from service import settings
 
 
 def test_download(s3_bucket):
