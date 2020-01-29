@@ -28,3 +28,43 @@ def sns_topic_arn():
     response = resource.meta.client.create_topic(Name=topic_name)
 
     yield response["TopicArn"]
+    resource.meta.client.delete_topic(
+        TopicArn=response["TopicArn"]
+    )
+
+
+@pytest.fixture
+def sqs_queue():
+    from service.aws_boto3 import create_sqs_resource
+    resource = create_sqs_resource()
+
+    queue_name = str(uuid4())
+
+    queue = resource.meta.client.create_queue(
+        QueueName=queue_name
+    )
+
+    resource.meta.client.send_message(
+        QueueUrl=queue.get("QueueUrl"),
+        MessageBody=str(uuid4())
+    )
+
+    yield queue
+
+@pytest.fixture
+def sqs_queue_name():
+    from service.aws_boto3 import create_sqs_resource
+    resource = create_sqs_resource()
+
+    queue_name = str(uuid4())
+
+    queue = resource.meta.client.create_queue(
+        QueueName=queue_name
+    )
+
+    resource.meta.client.send_message(
+        QueueUrl=queue.get("QueueUrl"),
+        MessageBody=str(uuid4())
+    )
+
+    yield queue_name
