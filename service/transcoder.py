@@ -1,11 +1,14 @@
+import io
 from pydub import AudioSegment
 
 
 def transcode(file, output):
 
-    key = output['key']
     format = output['format']
+    handle = io.BytesIO()
 
     # make audiosegment from pydub and convert to flac
-    audiosegment = AudioSegment.from_file(file)
-    audiosegment.export(key, format=format)
+    audio = AudioSegment.from_file(file)
+    audio.export(handle, format=format)
+
+    return handle

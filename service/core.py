@@ -1,4 +1,3 @@
-import os
 import io
 import json
 from .validators import validate_message, check_error_list as errorcheck
@@ -22,11 +21,12 @@ def process_messages(messages):
 
     for output in message["outputs"]:
         file = download(create_s3_resource(), message["input"])
-        transcode(file, output)
+        transcoded = transcode(file, output)
 
         try:
-            upload(create_s3_resource(), output)
+            upload(create_s3_resource(), transcoded, output)
         except Exception as e:
+            print(e)
             errors.append(e)
 
     callback(
@@ -36,27 +36,21 @@ def process_messages(messages):
         errors if errorcheck(errors) else None
     )
 
-    for output in message["outputs"]:
-        remove_local_files(output["key"])
-
     return messages['Messages'][0]['ReceiptHandle']
 
 
-def upload(resource, output):
+def upload(resource, transcoded, output):
     # upload converted to output["bucket"]
     bucket = output["bucket"]
     key = output["key"]
 
-    resource.meta.client.upload_file(
-        Filename=key,
+    file = io.BytesIO(transcoded.read())
+
+    resource.meta.client.upload_fileobj(
+        file,
         Bucket=bucket,
         Key=key,
     )
-
-
-def remove_local_files(file):
-    print(F"REMOVING {file} FROM OS")
-    os.remove(file)
 
 
 def download(resource, input):
