@@ -19,7 +19,7 @@ def create_sns_resource():
     return boto3.resource('sns', endpoint_url=AWS_SNS_ENDPOINT_URL)
 
 
-def listen_sqs_queue(resource, queue_name, process_messages):
+def listen_sqs_queue(resource, queue_name, process_messages, delete_message, run_once=False):
     queue = resource.meta.client.create_queue(QueueName=queue_name)
 
     while True:
@@ -33,6 +33,9 @@ def listen_sqs_queue(resource, queue_name, process_messages):
             print("There are messages, collected 1 and processing it now...")
             ReceiptHandle = process_messages(messages)
             delete_message(create_sqs_resource(), queue, ReceiptHandle)
+
+        if run_once:
+            break
 
 
 def publish_sns(resource, topicarn, message):
