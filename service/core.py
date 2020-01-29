@@ -1,5 +1,6 @@
 import io
 import json
+from botocore.exceptions import ClientError
 from .validators import validate_message, check_error_list as errorcheck
 from .aws_boto3 import create_s3_resource, create_sns_resource, publish_sns
 from .settings import (
@@ -20,16 +21,20 @@ def process_messages(messages):
     errors = []
 
     for output in message["outputs"]:
-        file = download(create_s3_resource(), message["input"])
-        transcoded = transcode(file, output)
-
         try:
+            file = download(create_s3_resource(), message["input"])
+            transcoded = transcode(file, output)
             upload(create_s3_resource(), transcoded, output)
+        except ClientError as e:
+            print(e)
+            errors.append(e)
+
         except Exception as e:
             print(e)
             errors.append(e)
 
     callback(
+        AWS_SNS_TOPIC_ARN,
         message["input"],
         message["outputs"],
         "error" if errorcheck(errors) else "success",
@@ -73,11 +78,11 @@ def download(resource, input):
     return tempFile
 
 
-def callback(input, outputs, status, errors=None):
+def callback(topic_arn, input, outputs, status, errors=None):
 
     publish_sns(
         create_sns_resource(),
-        AWS_SNS_TOPIC_ARN,
+        topic_arn,
         json.dumps(
             {
                 "from_type": input,
@@ -87,5 +92,5 @@ def callback(input, outputs, status, errors=None):
             }
         ),
     )
-
+    
     print("Successfully published to sns")
