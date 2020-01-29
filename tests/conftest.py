@@ -14,7 +14,6 @@ def s3_bucket():
     except ClientError:
         bucket = resource.Bucket(bucket_name)
         bucket.objects.all().delete()
-    print(bucket)
     yield bucket
     bucket.objects.all().delete()
     bucket.delete()
