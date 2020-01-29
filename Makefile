@@ -1,2 +1,5 @@
+coverage:
+	pytest --cov=service -v
+
 test:
-	pytest -v
+	pytest
