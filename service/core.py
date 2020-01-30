@@ -1,5 +1,6 @@
 import io
 import json
+from pydub.audio_segment.exceptions import CouldntDecodeError
 from botocore.exceptions import ClientError
 from .validators import validate_message, check_error_list as errorcheck
 from .aws_boto3 import create_s3_resource, create_sns_resource, publish_sns
@@ -29,9 +30,20 @@ def process_messages(messages):
             print(e)
             errors.append(e)
 
-        except Exception as e:
-            print(e)
-            errors.append(e)
+        except CouldntDecodeError:
+            msg = "Coudln't decode due to bad format or corrupt data."
+            print(msg)
+            errors.append(msg)
+
+        except IndexError:
+            msg = "Unsupported format."
+            print(msg)
+            errors.append(msg)
+
+        except Exception:
+            msg = "Unsupported format."
+            print(msg)
+            errors.append(msg)
 
     callback(
         AWS_SNS_TOPIC_ARN,
@@ -85,8 +97,8 @@ def callback(topic_arn, input, outputs, status, errors=None):
         topic_arn,
         json.dumps(
             {
-                "from_type": input,
-                "to_type": outputs,
+                "from": input,
+                "to": outputs,
                 "status": status,
                 "errors": errors,
             }
