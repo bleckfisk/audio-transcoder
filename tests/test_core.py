@@ -1,9 +1,11 @@
 import io
 import pytest
-from service.core import upload, download, callback
+import json
+from service.core import upload, download, callback, process_messages
 from uuid import uuid4
-from service.aws_boto3 import create_s3_resource
+from service.aws_boto3 import create_s3_resource, create_sqs_resource
 from botocore.exceptions import ClientError
+from unittest import mock
 
 
 def test_download(s3_bucket):
@@ -190,3 +192,29 @@ def test_callback_errors(sns_topic_arn):
     errors = [str(uuid4()), str(uuid4()), str(uuid4())]
 
     callback(sns_topic_arn, input, outputs, status, errors)
+
+
+@mock.patch("service.core.callback")
+@mock.patch("service.core.upload")
+@mock.patch("service.transcoder.transcode", return_value=io.BytesIO)
+@mock.patch("service.core.download", return_value=io.BytesIO)
+@mock.patch("service.validators.validate_message")
+def test_process_messages(mock_validate_message, mock_download, mock_transcode, mock_upload, mock_callback, sqs_queue):
+    resource = create_sqs_resource()
+
+    messages = resource.meta.client.receive_message(
+        QueueUrl=sqs_queue.get("QueueUrl"),
+        MaxNumberOfMessages=1,
+        WaitTimeSeconds=0
+    )
+
+    loaded_message_body = json.loads(messages["Messages"][0]["Body"])
+
+    handle = process_messages(messages)
+    assert handle == messages["Messages"][0]["ReceiptHandle"]
+    assert mock_validate_message.called_once_with(loaded_message_body)
+    assert mock_download.called_with(create_s3_resource(), loaded_message_body["input"])
+
+    for output in loaded_message_body:
+        assert mock_transcode.called_with(io.BytesIO(), loaded_message_body[output])
+        assert mock_upload.called_with(create_s3_resource(), io.BytesIO(), loaded_message_body[output])
