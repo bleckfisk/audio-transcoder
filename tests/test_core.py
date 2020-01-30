@@ -208,7 +208,7 @@ def test_process_messages(mock_validate_message, mock_download, mock_transcode, 
         WaitTimeSeconds=0
     )
 
-    loaded_message_body = json.loads(messages["Messages"][0]["Body"])
+    loaded_message_body = json.loads(messages['Messages'][0]['Body'])
 
     handle = process_messages(messages)
     assert handle == messages["Messages"][0]["ReceiptHandle"]
