@@ -62,11 +62,20 @@ def test_delete_message(sqs_queue):
 
     delete_message(resource, sqs_queue, receipthandle_1)
 
+    messages_2 = resource.meta.client.receive_message(
+        QueueUrl=sqs_queue.get("QueueUrl"),
+        MaxNumberOfMessages=1,
+        WaitTimeSeconds=0
+    )
+
+    assert "Messages" not in messages_2
+
 
 def test_listen_sqs_queue(sqs_queue_name):
 
     process_messages_mock = mock.Mock(return_value='')
     delete_message_mock = mock.Mock()
+
     listen_sqs_queue(
         create_sqs_resource(),
         sqs_queue_name,
