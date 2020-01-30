@@ -199,7 +199,10 @@ def test_callback_errors(sns_topic_arn):
 @mock.patch("service.transcoder.transcode", return_value=io.BytesIO)
 @mock.patch("service.core.download", return_value=io.BytesIO)
 @mock.patch("service.validators.validate_message")
-def test_process_messages(mock_validate_message, mock_download, mock_transcode, mock_upload, mock_callback, sqs_queue):
+def test_process_messages(
+    mock_validate_message, mock_download, mock_transcode,
+        mock_upload, mock_callback, sqs_queue):
+
     resource = create_sqs_resource()
 
     messages = resource.meta.client.receive_message(
@@ -213,8 +216,21 @@ def test_process_messages(mock_validate_message, mock_download, mock_transcode, 
     handle = process_messages(messages)
     assert handle == messages["Messages"][0]["ReceiptHandle"]
     assert mock_validate_message.called_once_with(loaded_message_body)
-    assert mock_download.called_with(create_s3_resource(), loaded_message_body["input"])
+
+    assert mock_download.called_with(
+        create_s3_resource(),
+        loaded_message_body["input"]
+        )
 
     for output in loaded_message_body:
-        assert mock_transcode.called_with(io.BytesIO(), loaded_message_body[output])
-        assert mock_upload.called_with(create_s3_resource(), io.BytesIO(), loaded_message_body[output])
+
+        assert mock_transcode.called_with(
+            io.BytesIO(),
+            loaded_message_body[output]
+            )
+
+        assert mock_upload.called_with(
+            create_s3_resource(),
+            io.BytesIO(),
+            loaded_message_body[output]
+            )
