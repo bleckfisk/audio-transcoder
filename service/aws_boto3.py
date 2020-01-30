@@ -7,6 +7,7 @@ from .settings import (
 )
 
 
+
 def create_sqs_resource():
     return boto3.resource('sqs', endpoint_url=AWS_SQS_ENDPOINT_URL)
 
@@ -19,7 +20,7 @@ def create_sns_resource():
     return boto3.resource('sns', endpoint_url=AWS_SNS_ENDPOINT_URL)
 
 
-def listen_sqs_queue(resource, queue_name, process_messages, delete_message=None, run_once=False):
+def listen_sqs_queue(resource, queue_name, process_messages, delete_message, run_once=False):
     queue = resource.meta.client.create_queue(QueueName=queue_name)
 
     while True:
@@ -45,6 +46,8 @@ def publish_sns(resource, topicarn, message):
             TopicArn=topicarn,
             Message=message
         )
+        print("This was published...")
+        print(message)
     except ClientError as e:
         if e.response["Error"]["Code"] == "NotFound":
             raise
