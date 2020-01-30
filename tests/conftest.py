@@ -1,6 +1,28 @@
+
 from botocore.exceptions import ClientError
 import pytest
+import json
 from uuid import uuid4
+
+
+VALID_DATA = {
+    "input": {
+        "key": "test_sample_loop.wav",
+        "bucket": "testbucket"
+    },
+    "outputs": [
+        {
+            "key": "test_sample_loop.flac",
+            "format": "flac",
+            "bucket": "testbucket"
+        },
+        {
+            "key": "test_sample_loop.mp3",
+            "format": "mp3",
+            "bucket": "testbucket"
+        },
+    ]
+}
 
 
 @pytest.fixture
@@ -46,7 +68,7 @@ def sqs_queue():
 
     resource.meta.client.send_message(
         QueueUrl=queue.get("QueueUrl"),
-        MessageBody=str(uuid4())
+        MessageBody=json.dumps(VALID_DATA)
     )
 
     yield queue
@@ -65,7 +87,7 @@ def sqs_queue_name():
 
     resource.meta.client.send_message(
         QueueUrl=queue.get("QueueUrl"),
-        MessageBody=str(uuid4())
+        MessageBody=json.dumps(VALID_DATA)
     )
 
     yield queue_name

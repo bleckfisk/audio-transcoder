@@ -19,7 +19,7 @@ def create_sns_resource():
     return boto3.resource('sns', endpoint_url=AWS_SNS_ENDPOINT_URL)
 
 
-def listen_sqs_queue(resource, queue_name, process_messages, delete_message, run_once=False):
+def listen_sqs_queue(resource, queue_name, process_messages, delete_message=None, run_once=False):
     queue = resource.meta.client.create_queue(QueueName=queue_name)
 
     while True:
