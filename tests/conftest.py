@@ -1,6 +1,8 @@
 
 from botocore.exceptions import ClientError
 import pytest
+import io
+import os
 import json
 from uuid import uuid4
 
@@ -91,3 +93,44 @@ def sqs_queue_name():
     )
 
     yield queue_name
+
+
+@pytest.fixture
+def unsupported_transcode_data():
+
+    handles = []
+
+    with open(f"{os.getcwd()}/tests/actions/test_samples/Cat03.jpg", "rb") as jpg:
+
+        handle_1 = io.BytesIO(jpg.read())
+        handles.append(handle_1)
+
+    with open(f"{os.getcwd()}/tests/actions/test_samples/Test.pdf", "rb") as pdf:
+
+        handle_2 = io.BytesIO(pdf.read())
+        handles.append(handle_2)
+
+    to_transcoder = {
+        "handles": handles,
+        "outputs": VALID_DATA["outputs"]
+    }
+
+    return to_transcoder
+
+
+@pytest.fixture
+def supported_transcode_data():
+
+    handles = []
+
+    with open(f"{os.getcwd()}/tests/actions/test_samples/test_sample_loop.wav", "rb") as wav:
+
+        handle_3 = io.BytesIO(wav.read())
+        handles.append(handle_3)
+
+    to_transcoder = {
+        "handles": handles,
+        "outputs": VALID_DATA["outputs"][0]
+    }
+
+    return to_transcoder
