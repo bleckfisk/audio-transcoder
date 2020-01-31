@@ -7,7 +7,6 @@ from .settings import (
 )
 
 
-
 def create_sqs_resource():
     return boto3.resource('sqs', endpoint_url=AWS_SQS_ENDPOINT_URL)
 
@@ -24,30 +23,27 @@ def listen_sqs_queue(resource, queue_name, process_messages, delete_message, run
     queue = resource.meta.client.create_queue(QueueName=queue_name)
 
     while True:
-        print("listening for messages in queue...")
         messages = resource.meta.client.receive_message(
             QueueUrl=queue.get("QueueUrl"),
             MaxNumberOfMessages=1,
             WaitTimeSeconds=10
         )
         if 'Messages' in messages:
-            print("There are messages, collected 1 and processing it now...")
-            ReceiptHandle = process_messages(messages)
-            delete_message(create_sqs_resource(), queue, ReceiptHandle)
-
+            callback = process_messages(messages)
+            delete_message(create_sqs_resource(), queue, callback[0])
+            return callback[1]
         if run_once:
             break
 
 
 def publish_sns(resource, topicarn, message):
-    # publish notification to topic
+
     try:
         resource.meta.client.publish(
             TopicArn=topicarn,
             Message=message
         )
-        print("This was published...")
-        print(message)
+
     except ClientError as e:
         if e.response["Error"]["Code"] == "NotFound":
             raise

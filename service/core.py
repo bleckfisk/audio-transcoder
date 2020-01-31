@@ -45,7 +45,7 @@ def process_messages(messages):
             print(msg)
             errors.append(msg)
 
-    callback(
+    published_object = callback(
         AWS_SNS_TOPIC_ARN,
         message["input"],
         message["outputs"],
@@ -53,7 +53,7 @@ def process_messages(messages):
         errors if errorcheck(errors) else None
     )
 
-    return messages['Messages'][0]['ReceiptHandle']
+    return [messages['Messages'][0]['ReceiptHandle'], published_object]
 
 
 def upload(resource, transcoded, output):
@@ -92,17 +92,20 @@ def download(resource, input):
 
 def callback(topic_arn, input, outputs, status, errors=None):
 
+    payload = json.dumps(
+        {
+            "from": input,
+            "to": outputs,
+            "status": status,
+            "errors": errors
+            }
+        )
+
     publish_sns(
         create_sns_resource(),
         topic_arn,
-        json.dumps(
-            {
-                "from": input,
-                "to": outputs,
-                "status": status,
-                "errors": errors,
-            }
-        ),
-    )
+        payload
+        )
 
     print("Successfully published to sns")
+    return payload
