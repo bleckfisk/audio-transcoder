@@ -1,4 +1,3 @@
-import pytest
 import json
 from service.core import process_messages
 from service.aws_boto3 import (

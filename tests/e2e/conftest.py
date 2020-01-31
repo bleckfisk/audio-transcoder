@@ -1,7 +1,6 @@
 import pytest
 from uuid import uuid4
 import os
-import io
 import json
 from os import environ as env
 from botocore.exceptions import ClientError
@@ -29,9 +28,9 @@ def setup_no_exceptions():
     bucket_name = str(uuid4())
 
     try:
-        bucket = s3.create_bucket(Bucket=bucket_name)
+        s3.create_bucket(Bucket=bucket_name)
     except ClientError:
-        bucket = s3.Bucket(bucket_name)
+        s3.Bucket(bucket_name)
 
     data = {
         "input": {
@@ -88,6 +87,7 @@ def setup_no_exceptions():
 
     assert response["TopicArn"] == topic_arn
 
+
 @pytest.fixture
 def setup_error():
     """
@@ -100,9 +100,9 @@ def setup_error():
     bucket_name = str(uuid4())
 
     try:
-        bucket = s3.create_bucket(Bucket=bucket_name)
+        s3.create_bucket(Bucket=bucket_name)
     except ClientError:
-        bucket = s3.Bucket(bucket_name)
+        s3.Bucket(bucket_name)
 
     data = {
         "input": {
