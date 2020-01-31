@@ -9,17 +9,17 @@ from uuid import uuid4
 
 VALID_DATA = {
     "input": {
-        "key": "test_sample_loop.wav",
+        "key": "file_example_WAV_10MG.wav",
         "bucket": "testbucket"
     },
     "outputs": [
         {
-            "key": "test_sample_loop.flac",
+            "key": "file_example_WAV_10MG.flac",
             "format": "flac",
             "bucket": "testbucket"
         },
         {
-            "key": "test_sample_loop.mp3",
+            "key": "file_example_WAV_10MG.mp3",
             "format": "mp3",
             "bucket": "testbucket"
         },
@@ -124,7 +124,7 @@ def supported_transcode_data():
     handles = []
 
     with open(
-        f"{os.getcwd()}/tests/test_samples/test_sample_loop.wav", "rb"
+        f"{os.getcwd()}/tests/test_samples/file_example_WAV_10MG.wav", "rb"
             ) as wav:
 
         handle_3 = io.BytesIO(wav.read())
