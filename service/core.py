@@ -1,6 +1,6 @@
 import io
 import json
-from pydub.audio_segment.exceptions import CouldntDecodeError
+from pydub.exceptions import CouldntDecodeError
 from botocore.exceptions import ClientError
 from .validators import validate_message, check_error_list as errorcheck
 from .aws_boto3 import create_s3_resource, create_sns_resource, publish_sns
