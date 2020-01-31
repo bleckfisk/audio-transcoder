@@ -18,4 +18,4 @@ RUN pipenv install pydub
 # Install FFMPEG 
 RUN apt-get update && apt-get -y install ffmpeg libavcodec-extra
 
-CMD ["python", "service/core.py"]
+CMD ["python", "-m", "service"]
