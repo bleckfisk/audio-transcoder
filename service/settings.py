@@ -1,10 +1,10 @@
+from os import environ as env
 
-AWS_SQS_ENDPOINT_URL = "http://localhost:4000/"
-AWS_SQS_QUEUE_NAME = "testqueue"
-AWS_S3_ENDPOINT_URL = "http://localhost:4001/"
-AWS_SNS_ENDPOINT_URL = "http://localhost:4002/"
-AWS_SNS_TOPIC_ARN = "arn:aws:sns:us-east-1:000000000000:testtopic"
-AWS_DEFAULT_REGION = "eu-west-1"
-AWS_ACCESS_KEY_ID = "test"
-AWS_SECRET_ACCESS_KEY = "test"
-BUCKET_NAME = "testbucket"
+AWS_SQS_ENDPOINT_URL = env.get("AWS_SQS_ENDPOINT_URL")
+AWS_SQS_QUEUE_NAME = env.get("AWS_SQS_QUEUE_NAME")
+AWS_S3_ENDPOINT_URL = env.get("AWS_S3_ENDPOINT_URL")
+AWS_SNS_ENDPOINT_URL = env.get("AWS_SNS_ENDPOINT_URL")
+AWS_SNS_TOPIC_ARN = env.get("AWS_SNS_TOPIC_ARN")
+AWS_DEFAULT_REGION = env.get("AWS_DEFAULT_REGION")
+AWS_ACCESS_KEY_ID = env.get("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = env.get("AWS_SECRET_ACCESS_KEY")
