@@ -20,6 +20,9 @@ services:
         PIPENV_ARGS: "--dev"
     depends_on:
       - localstack
+    volumes:
+      - ./service:/app/service
+      - ./tests:/app/tests
     environment:
       AWS_SQS_ENDPOINT_URL: "http://localstack:4000/"
       AWS_S3_ENDPOINT_URL: "http://localstack:4001/"
