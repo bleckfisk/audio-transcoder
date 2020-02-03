@@ -10,7 +10,7 @@ be done and reports back to SNS Topic with information of whether or not the job
 
  - Docker
  - Docker-Compose
- - Amazong Web Services Account with use of SQS, SNS and S3. 
+ - Amazon Web Services Account with use of SQS, SNS and S3. 
 
 #### Used Dependencies (Handled by pipenv)
 
