@@ -73,7 +73,7 @@ def test_delete_message(sqs_queue):
 
 def test_listen_sqs_queue(sqs_queue_name):
 
-    process_messages_mock = mock.Mock(return_value='')
+    process_messages_mock = mock.Mock(return_value=['', ''])
     delete_message_mock = mock.Mock()
 
     listen_sqs_queue(
