@@ -30,18 +30,29 @@ be done and reports back to SNS Topic with information of whether or not the job
  - Edit AWS related environment variables in ```docker-compose.yml``` file to fit your needs.
     - Note: If you are running the transcoder outside of container, make sure AWS Environment variables are set or set them in the ```service/settings.py``` file. 
  
+ - Build Containers
+ 
+    ```make build```
+
  - Run Localstack
+
+    ```docker-compose up localstack```  
+        - If you want it detached, add ```-d``` before localstack.
  
-    ```docker-compose up localstack```
-        - If you want it detached, add ```-d``` before locastack.
- 
+
+ - Run Tests for Bleck Audio Transcoder
+
+    ```make test```
+
  - Run Bleck Audio Transcode Container
-    ```docker-compose up transcoder```
-    
-    - Note: The container will run all tests for the transcoder before running the transcoder itself. If a test fails, please have a look at the environment variables for AWS set in step 2 and localstack is running, as these are required for tests to pass. 
+
+    ```docker-compose up -d transcoder```
     
   - When transcoder-container is up it will directly start looking for messages in SQS and is by then ready to be used.
     
+  - If you after entering AWS Environment Variable want to do the docker-compose process in one command, you can enter ```make setup```. 
+
+
 ## How To Use
   - Make sure SQS Queue Name and SNS Topic Name in environment variables or settings-file are correct.
   - Make sure transcoder container is running.
