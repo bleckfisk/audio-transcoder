@@ -10,7 +10,6 @@ flake8 = "*"
 [packages]
 pydub = "*"
 boto3 = "*"
-awscli = "*"
 pytest = "*"
 pytest-cov = "*"
 coverage = "*"
