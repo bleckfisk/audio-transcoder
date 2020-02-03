@@ -1,6 +1,6 @@
-# Bleck Audio Transcoder
-# UNDER DEVELOPMENT 
-#### About
+# Bleck Audio Transcoder (Under Development)
+
+## About
 
 Bleck Audio Transcoder is a software that lets you transcode audio files between wide variety of formats.
 It is built with Amazon Web Services Infrastructure in mind and listens to SQS Queue for jobs to 
@@ -12,7 +12,7 @@ be done and reports back to SNS Topic with information of whether or not the job
  - Docker-Compose
  - Amazong Web Services Account with use of SQS, SNS and S3. 
 
-## Used Dependencies (Handled by pipenv)
+#### Used Dependencies (Handled by pipenv)
 
   - Pydub (https://github.com/jiaaro/pydub)
   - Localstack (https://github.com/localstack/localstack)
@@ -21,8 +21,8 @@ be done and reports back to SNS Topic with information of whether or not the job
   - Pytest-cov (https://github.com/pytest-dev/pytest-cov)
   - Coverage (https://github.com/nedbat/coveragepy)
 
-### Installation & Setup
- ## For Dev and Local Testing
+## Installation & Setup
+ ### For Dev and Local Testing
  - Clone Repository to machine that should run the docker container
  
     ```git clone https://github.com/brorssonoskar/bleck-audio-transcoder```
