@@ -3,3 +3,6 @@ coverage:
 
 test:
 	@docker-compose run --rm --entrypoint 'pytest -v' transcoder
+
+build:
+	docker-compose -p transcoder build

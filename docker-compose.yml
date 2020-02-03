@@ -12,7 +12,7 @@ services:
       SERVICES: "sqs:4000,s3:4001,sns:4002"
       DEBUG: 1
 
-  transcoder:
+  service:
     image: bleckfisk/audiotranscoder
     build:
       context: .
@@ -32,3 +32,7 @@ services:
       AWS_DEFAULT_REGION: "eu-west-1"
       AWS_ACCESS_KEY_ID: "test"
       AWS_SECRET_ACCESS_KEY: "test"
+    
+volumes:
+  service:
+  tests:
