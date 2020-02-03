@@ -12,8 +12,9 @@ services:
       SERVICES: "sqs:4000,s3:4001,sns:4002"
       DEBUG: 1
 
-  service:
+  transcoder:
     image: bleckfisk/audiotranscoder
+    container_name: transcoder
     build:
       context: .
       args:
