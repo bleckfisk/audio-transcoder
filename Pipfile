@@ -12,8 +12,8 @@ pydub = "*"
 boto3 = "*"
 awscli = "*"
 pytest = "*"
-coverage = "*"
 pytest-cov = "*"
+coverage = "*"
 
 [requires]
 python_version = "3.7"
