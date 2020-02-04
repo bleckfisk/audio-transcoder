@@ -2,7 +2,6 @@ import pytest
 from uuid import uuid4
 import os
 import json
-from os import environ as env
 from botocore.exceptions import ClientError
 from service.aws_boto3 import (
     create_s3_resource,
@@ -56,11 +55,7 @@ def setup_no_exceptions():
 
     sqs = create_sqs_resource()
 
-    queue = sqs.meta.client.create_queue(
-        QueueName=env.get("AWS_SQS_QUEUE_NAME") if isinstance(
-            env.get("AWS_SQS_QUEUE_NAME"), str
-            ) else AWS_SQS_QUEUE_NAME
-    )
+    queue = sqs.meta.client.create_queue(QueueName=AWS_SQS_QUEUE_NAME)
 
     sqs.meta.client.send_message(
         QueueUrl=queue.get("QueueUrl"),
@@ -69,17 +64,9 @@ def setup_no_exceptions():
 
     sns = create_sns_resource()
 
-    topic_arn = env.get("AWS_SNS_TOPIC_ARN") if isinstance(
-        env.get("AWS_SNS_TOPIC_ARN"), str
-        ) else AWS_SNS_TOPIC_ARN
+    topic_arn = AWS_SNS_TOPIC_ARN
 
-    i = 0
-    topic_name = ''
-    for character in topic_arn:
-        if i == 5:
-            topic_name += character
-        if character == ":":
-            i += 1
+    topic_name = get_topic_name_by_arn(topic_arn)
 
     response = sns.meta.client.create_topic(
         Name=topic_name
@@ -128,11 +115,7 @@ def setup_error():
 
     sqs = create_sqs_resource()
 
-    queue = sqs.meta.client.create_queue(
-        QueueName=env.get("AWS_SQS_QUEUE_NAME") if isinstance(
-            env.get("AWS_SQS_QUEUE_NAME"), str
-            ) else AWS_SQS_QUEUE_NAME
-    )
+    queue = sqs.meta.client.create_queue(QueueName=AWS_SQS_QUEUE_NAME)
 
     sqs.meta.client.send_message(
         QueueUrl=queue.get("QueueUrl"),
@@ -141,10 +124,18 @@ def setup_error():
 
     sns = create_sns_resource()
 
-    topic_arn = env.get("AWS_SNS_TOPIC_ARN") if isinstance(
-        env.get("AWS_SNS_TOPIC_ARN"), str
-        ) else AWS_SNS_TOPIC_ARN
+    topic_arn = AWS_SNS_TOPIC_ARN
 
+    topic_name = get_topic_name_by_arn(topic_arn)
+
+    response = sns.meta.client.create_topic(
+        Name=topic_name
+    )
+
+    assert response["TopicArn"] == topic_arn
+
+
+def get_topic_name_by_arn(topic_arn):
     i = 0
     topic_name = ''
     for character in topic_arn:
@@ -153,8 +144,4 @@ def setup_error():
         if character == ":":
             i += 1
 
-    response = sns.meta.client.create_topic(
-        Name=topic_name
-    )
-
-    assert response["TopicArn"] == topic_arn
+    return topic_name
