@@ -58,7 +58,7 @@ be done and reports back to SNS Topic with information of whether or not the job
   - If you after entering AWS Environment Variable want to do the docker-compose process in one command, you can enter ```make setup```. 
 
   ### For Production Environment
-  - Make sure environment has the following environment variables set with correct values:
+  - Make sure environment has access to the following environment variables set with correct values. This can be done in a multiple ways depending on how your production environment is set up.
     ```AWS_SQS_QUEUE_NAME```
     ```AWS_SNS_TOPIC_ARN```
     ```AWS_ACCESS_KEY_ID```
