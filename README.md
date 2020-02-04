@@ -12,7 +12,8 @@ be done and reports back to SNS Topic with information of whether or not the job
  - Docker-Compose
  - Amazon Web Services Account with use of SQS, SNS and S3. 
 
-#### Used Dependencies (Handled by pipenv)
+#### Dependencies
+##### Handled by Pipenv (Pipfile)
 
   - Pydub (https://github.com/jiaaro/pydub)
   - Localstack (https://github.com/localstack/localstack)
@@ -21,16 +22,20 @@ be done and reports back to SNS Topic with information of whether or not the job
   - Pytest-cov (https://github.com/pytest-dev/pytest-cov)
   - Coverage (https://github.com/nedbat/coveragepy)
 
+#### Handled by Docker (Dockerfile)
+  - FFMPEG + libavcodec (https://github.com/FFmpeg/FFmpeg)
+
+
 ## Installation & Setup
- ### For Dev and Local Testing
  - Clone Repository to machine that should run the docker container
  
     ```git clone https://github.com/brorssonoskar/bleck-audio-transcoder```
-  
+
+ ### For Dev and Local Testing
  - Edit AWS related environment variables in ```docker-compose.yml``` file to fit your needs.
     - Note: If you are running the transcoder outside of container, make sure AWS Environment variables are set or set them in the ```service/settings.py``` file. 
  
- - Build Containers
+ - Build Transcoder Image and Container
  
     ```make build```
 
@@ -52,6 +57,22 @@ be done and reports back to SNS Topic with information of whether or not the job
     
   - If you after entering AWS Environment Variable want to do the docker-compose process in one command, you can enter ```make setup```. 
 
+  ### For Production Environment
+  - Make sure environment has the following environment variables set with correct values:
+    ```AWS_SQS_QUEUE_NAME```
+    ```AWS_SNS_TOPIC_ARN```
+    ```AWS_ACCESS_KEY_ID```
+    ```AWS_SECRET_ACCESS_KEY```
+    ```AWS_DEFAULT_REGION```
+
+  - Build Transcoder Image from Dockerfile
+    ```docker build .```
+
+  - Create Container from Image
+    ```docker create bleckfisk/audiotranscoder``` 
+
+  - Run Container
+    ```docker run bleckfisk/audiotranscoder```
 
 ## How To Use
   - Make sure SQS Queue Name and SNS Topic Name in environment variables or settings-file are correct.
