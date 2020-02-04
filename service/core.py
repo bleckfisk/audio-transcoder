@@ -11,9 +11,12 @@ from .transcoder import transcode
 
 
 def process_messages(messages):
-    print("processing message...")
-    # acceps a response checks the format of the message
-    # should call check_type() and other validation functions
+    """
+    Function for handling the core functionality of the service.
+    Validates the message, download file, transcode and upload file again
+    based on inputs from SQS. Exceptions raised contribute to the errors-list
+    which later is used in the callback to SNS Topic.
+    """
     message = json.loads(messages['Messages'][0]['Body'])
 
     if not validate_message(message):
@@ -27,25 +30,21 @@ def process_messages(messages):
             transcoded = transcode(file, output)
             upload(create_s3_resource(), transcoded, output)
         except ClientError as e:
-            print(e)
             errors.append(e)
 
         except CouldntDecodeError:
             msg = "Coudln't decode due to bad format or corrupt data."
-            print(msg)
             errors.append(msg)
 
         except IndexError:
             msg = "Unsupported format."
-            print(msg)
             errors.append(msg)
 
         except Exception:
             msg = "Unsupported format."
-            print(msg)
             errors.append(msg)
 
-    published_object = callback(
+    callback(
         AWS_SNS_TOPIC_ARN,
         message["input"],
         message["outputs"],
@@ -53,7 +52,7 @@ def process_messages(messages):
         errors if errorcheck(errors) else None
     )
 
-    return [messages['Messages'][0]['ReceiptHandle'], published_object]
+    return messages['Messages'][0]['ReceiptHandle']
 
 
 def upload(resource, transcoded, output):
@@ -86,26 +85,20 @@ def download(resource, input):
     tempFile = io.BytesIO(file)
 
     # handle the file and return it
-    print("successfully downloaded, returning file now")
     return tempFile
 
 
 def callback(topic_arn, input, outputs, status, errors=None):
 
-    payload = json.dumps(
-        {
-            "from": input,
-            "to": outputs,
-            "status": status,
-            "errors": errors
-            }
-        )
-
     publish_sns(
         create_sns_resource(),
         topic_arn,
-        payload
+        json.dumps(
+            {
+                "from": input,
+                "to": outputs,
+                "status": status,
+                "errors": errors
+            }
+            )
         )
-
-    print("Successfully published to sns")
-    return payload

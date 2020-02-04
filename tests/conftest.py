@@ -7,6 +7,12 @@ import json
 from uuid import uuid4
 
 
+"""
+Conftest file for all unittests to make sure
+the tests get data to work with in isolation
+"""
+
+
 VALID_DATA = {
     "input": {
         "key": "file_example_WAV_10MG.wav",

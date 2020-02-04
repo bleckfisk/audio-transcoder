@@ -50,6 +50,10 @@ def test_publish_sns_topic_not_found(sns_topic_arn):
 
 
 def test_delete_message(sqs_queue):
+    """
+    Test recieves a message, deletes in and then recieves messages again.
+    Asserts that the second response doesn't contain any message.
+    """
     resource = create_sqs_resource()
 
     messages_1 = resource.meta.client.receive_message(
@@ -72,6 +76,11 @@ def test_delete_message(sqs_queue):
 
 
 def test_listen_sqs_queue(sqs_queue_name):
+    """
+    Sends mocked functions to listen_sqs_queue()
+    to assert that listen_sqs_queue() is really calling functions
+    without having to run them
+    """
 
     process_messages_mock = mock.Mock(return_value=['', ''])
     delete_message_mock = mock.Mock()
