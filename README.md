@@ -12,8 +12,8 @@ be done and reports back to SNS Topic with information of whether or not the job
  - Docker-Compose
  - Amazon Web Services Account with use of SQS, SNS and S3. 
 
-#### Dependencies
-##### Handled by Pipenv (Pipfile)
+### Dependencies
+#### Handled by Pipenv (Pipfile)
 
   - Pydub (https://github.com/jiaaro/pydub)
   - Localstack (https://github.com/localstack/localstack)
