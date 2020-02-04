@@ -1,3 +1,11 @@
+"""
+A file containing validator functions to make sure
+the input from SQS Message is correct.
+
+Every function follows the logic of checking the keys and
+returning True or False depending on whether or not they are correct.
+"""
+
 
 def validate_message(data):
     validations = [

@@ -11,7 +11,7 @@ from unittest import mock
 def test_download(s3_bucket):
 
     """
-    Tests proves that subject returned from download() contains the
+    Tests proves that subject returned from download contains the
     same data that we uploaded manually.
     """
 
@@ -31,6 +31,11 @@ def test_download(s3_bucket):
 
 
 def test_download_key_not_exists(s3_bucket):
+    """
+    Test for exception handeling.
+    Will pass if the exception is raised, and is raised because of
+    key not found in download function
+    """
 
     key_1 = str(uuid4())
     key_2 = str(uuid4())
@@ -49,6 +54,11 @@ def test_download_key_not_exists(s3_bucket):
 
 
 def test_download_bucket_not_exists(s3_bucket):
+    """
+    Test for exception handeling.
+    Will pass if exception is raised, and is raised because
+    the bucket does not exist.
+    """
 
     key = str(uuid4())
     body = b"testdata"
@@ -67,7 +77,7 @@ def test_download_bucket_not_exists(s3_bucket):
 def test_upload(s3_bucket):
     """
     Test proves that file created here and sent to
-    upload() is uploaded accordingly.
+    upload is uploaded accordingly.
     """
 
     key = str(uuid4())
@@ -90,6 +100,11 @@ def test_upload(s3_bucket):
 
 
 def test_upload_bucket_not_exists(s3_bucket):
+    """
+    Test for exception handeling.
+    Will pass if exception is raised, and is raised because
+    the bucket does not exist.
+    """
 
     key = str(uuid4())
     bucket = str(uuid4())
@@ -139,7 +154,7 @@ def test_upload_download_data_assertion(s3_bucket):
 
 def test_callback_success(sns_topic_arn):
     """
-    Test proves that callback() is not throwing exceptions
+    Test proves that callback is not throwing exceptions
     when errors-argument == None
     """
     input_key = str(uuid4())
@@ -202,6 +217,13 @@ def test_callback_errors(sns_topic_arn):
 def test_process_messages(
     mock_validate_message, mock_download, mock_transcode,
         mock_upload, mock_callback, sqs_queue):
+
+    """
+    Test for process_messages many different calls to other functions.
+    The dependant functions are mocked with patch so that
+    process_messages can be tested in isolation without actually
+    calling the dependant functions.
+    """
 
     resource = create_sqs_resource()
 

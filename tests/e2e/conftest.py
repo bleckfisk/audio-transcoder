@@ -136,6 +136,10 @@ def setup_error():
 
 
 def get_topic_name_by_arn(topic_arn):
+    """
+    function for handling the somewhat tricky
+    built topic-arns used for topic targeting
+    """
     i = 0
     topic_name = ''
     for character in topic_arn:
