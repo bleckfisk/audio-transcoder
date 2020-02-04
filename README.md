@@ -65,6 +65,8 @@ be done and reports back to SNS Topic with information of whether or not the job
     ```AWS_SECRET_ACCESS_KEY```
     ```AWS_DEFAULT_REGION```
 
+    - Boto3 will in the files try to reach AWS Service Endpoints. When these are unset, it will instead target real AWS, and therefore the variables are not needed in production. 
+
   - Build Transcoder Image from Dockerfile
     ```docker build .```
 
