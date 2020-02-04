@@ -236,7 +236,7 @@ def test_process_messages(
     loaded_message_body = json.loads(messages['Messages'][0]['Body'])
 
     handle = process_messages(messages)
-    assert handle[0] == messages["Messages"][0]["ReceiptHandle"]
+    assert handle == messages["Messages"][0]["ReceiptHandle"]
     assert mock_validate_message.called_once_with(loaded_message_body)
 
     assert mock_download.called_with(
