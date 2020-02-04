@@ -1,9 +1,11 @@
 import json
+from unittest import mock
 from service.core import process_messages
 from service.aws_boto3 import (
     listen_sqs_queue,
     create_sqs_resource,
-    delete_message
+    delete_message,
+    publish_sns
 )
 
 
@@ -12,8 +14,9 @@ from service.settings import (
 )
 
 
-def test_service(setup_no_exceptions):
-    response = listen_sqs_queue(
+@mock.patch("service.aws_boto3.publish_sns")
+def test_service(mock_publish_sns, setup_no_exceptions):
+    listen_sqs_queue(
         create_sqs_resource(),
         AWS_SQS_QUEUE_NAME,
         process_messages,
@@ -21,13 +24,12 @@ def test_service(setup_no_exceptions):
         True
     )
 
-    callback = json.loads(response)
-    assert callback["status"] == 'success'
-    assert callback["errors"] is None
+    assert mock_publish_sns.call_count == 1
 
 
-def test_service_fails_callback_still_runs(setup_error):
-    response = listen_sqs_queue(
+@mock.patch("service.aws_boto3.publish_sns")
+def test_service_fails_callback_still_runs(mock_publish_sns, setup_error):
+    listen_sqs_queue(
         create_sqs_resource(),
         AWS_SQS_QUEUE_NAME,
         process_messages,
@@ -35,6 +37,4 @@ def test_service_fails_callback_still_runs(setup_error):
         True
     )
 
-    callback = json.loads(response)
-    assert callback["status"] == 'error'
-    assert callback["errors"] is not None
+    assert mock_publish_sns.call_count == 1
