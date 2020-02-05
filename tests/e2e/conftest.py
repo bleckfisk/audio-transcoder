@@ -23,7 +23,6 @@ def setup_no_exceptions():
     as the software is intended to be used.
     """
     s3 = create_s3_resource()
-
     bucket_name = str(uuid4())
 
     try:
@@ -54,23 +53,19 @@ def setup_no_exceptions():
     s3.meta.client.upload_file(file, bucket_name, data["input"]["key"])
 
     sqs = create_sqs_resource()
-
     queue = sqs.meta.client.create_queue(QueueName=AWS_SQS_QUEUE_NAME)
-
     sqs.meta.client.send_message(
         QueueUrl=queue.get("QueueUrl"),
         MessageBody=json.dumps(data)
     )
 
     sns = create_sns_resource()
-
     topic_arn = AWS_SNS_TOPIC_ARN
-
     topic_name = get_topic_name_by_arn(topic_arn)
-
     response = sns.meta.client.create_topic(
         Name=topic_name
     )
+
     assert response["TopicArn"] == topic_arn
     yield bucket
     bucket.objects.all().delete()
@@ -85,7 +80,6 @@ def setup_error():
     as the software is intended to be used.
     """
     s3 = create_s3_resource()
-
     bucket_name = str(uuid4())
 
     try:
@@ -116,20 +110,15 @@ def setup_error():
     s3.meta.client.upload_file(file, bucket_name, data["input"]["key"])
 
     sqs = create_sqs_resource()
-
     queue = sqs.meta.client.create_queue(QueueName=AWS_SQS_QUEUE_NAME)
-
     sqs.meta.client.send_message(
         QueueUrl=queue.get("QueueUrl"),
         MessageBody=json.dumps(data)
     )
 
     sns = create_sns_resource()
-
     topic_arn = AWS_SNS_TOPIC_ARN
-
     topic_name = get_topic_name_by_arn(topic_arn)
-
     response = sns.meta.client.create_topic(
         Name=topic_name
     )
