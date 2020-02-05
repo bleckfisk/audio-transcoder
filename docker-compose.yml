@@ -13,7 +13,7 @@ services:
       DEBUG: 1
 
   transcoder:
-    image: bleckfisk/audiotranscoder
+    image: audio-transcoder
     container_name: transcoder
     build:
       context: .

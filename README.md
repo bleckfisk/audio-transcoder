@@ -1,8 +1,8 @@
-# Bleck Audio Transcoder (Under Development)
+# Bleckfisk's Audio Transcoder (Under Development)
 
 ## About
 
-Bleck Audio Transcoder is a software that lets you transcode audio files between wide variety of formats.
+This Transcoder is a software that lets you transcode audio files between wide variety of formats.
 It is built with Amazon Web Services Infrastructure in mind and listens to SQS Queue for jobs to 
 be done and reports back to SNS Topic with information of whether or not the job succeeded or not.
 
@@ -29,7 +29,7 @@ be done and reports back to SNS Topic with information of whether or not the job
 ## Installation & Setup
  - Clone Repository to machine that should run the docker container
  
-    ```git clone https://github.com/brorssonoskar/bleck-audio-transcoder```
+    ```git clone https://github.com/bleckfisk/audio-transcoder```
 
  ### For Dev and Local Testing
  - Edit AWS related environment variables in ```docker-compose.yml``` file to fit your needs.
@@ -45,11 +45,11 @@ be done and reports back to SNS Topic with information of whether or not the job
         - If you want it detached, add ```-d``` before localstack.
  
 
- - Run Tests for Bleck Audio Transcoder
+ - Run Tests for Transcoder
 
     ```make test```
 
- - Run Bleck Audio Transcode Container
+ - Run Transcoder Container
 
     ```docker-compose up -d transcoder```
     
@@ -66,16 +66,16 @@ be done and reports back to SNS Topic with information of whether or not the job
     ```AWS_DEFAULT_REGION```
     This can be done in a multiple ways depending on how your production environment is set up.
 
-    - Boto3 will in the files try to reach AWS Service Endpoints (for reference: https://github.com/brorssonoskar/bleck-audio-transcoder/blob/e8cac9deb74f3ef0bb2d3ad5483440d6dc113871/service/aws_boto3.py#L18). When these are unset, it will instead target real AWS, and therefore the variables are not needed in production. 
+    - Boto3 will in the files try to reach AWS Service Endpoints (for reference: https://github.com/bleckfisk/audio-transcoder/blob/e8cac9deb74f3ef0bb2d3ad5483440d6dc113871/service/aws_boto3.py#L18). When these are unset, it will instead target real AWS, and therefore the variables are not needed in production. 
 
   - Build Transcoder Image from Dockerfile
     ```docker build .```
 
   - Create Container from Image
-    ```docker create bleckfisk/audiotranscoder``` 
+    ```docker create audio-transcoder``` 
 
   - Run Container
-    ```docker run bleckfisk/audiotranscoder```
+    ```docker run audio-transcoder```
 
 ## How To Use
   - Make sure SQS Queue Name and SNS Topic Name in environment variables or settings-file are correct.
