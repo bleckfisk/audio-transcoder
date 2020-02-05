@@ -64,7 +64,7 @@ be done and reports back to SNS Topic with information of whether or not the job
     ```AWS_SNS_TOPIC_ARN```: ARN of the Topic where the transcoder should publish the status of the executed job. \
     ```AWS_ACCESS_KEY_ID```: Your AWS Access Key ID \
     ```AWS_SECRET_ACCESS_KEY```: Your AWS Secret Access Key \
-    ```AWS_DEFAULT_REGION```: The region you want Boto3 to default to as the transcoder doesn't contain any hard coded regions. \
+    ```AWS_DEFAULT_REGION```: The region you want Boto3 to default to as the transcoder doesn't contain any hard coded regions. 
     
     This can be done in a multiple ways depending on how your production environment is set up.
 
