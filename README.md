@@ -66,7 +66,7 @@ be done and reports back to SNS Topic with information of whether or not the job
     ```AWS_DEFAULT_REGION```
     This can be done in a multiple ways depending on how your production environment is set up.
 
-    - Boto3 will in the files try to reach AWS Service Endpoints (for reference: https://github.com/bleckfisk/audio-transcoder/blob/e8cac9deb74f3ef0bb2d3ad5483440d6dc113871/service/aws_boto3.py#L18). When these are unset, it will instead target real AWS, and therefore the variables are not needed in production. 
+    - Boto3 will default to the actual endpoints of AWS if the endpoint variables are unset which means that endpoints shouldn't be needed in production.  
 
   - Build Transcoder Image from Dockerfile
     ```docker build .```
