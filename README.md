@@ -14,7 +14,6 @@ be done and reports back to SNS Topic with information of whether or not the job
 
 ### Dependencies
 #### Handled by Pipenv (Pipfile)
-
   - Pydub (https://github.com/jiaaro/pydub)
   - Localstack (https://github.com/localstack/localstack)
   - Boto3 (https://github.com/boto/boto3)
@@ -79,6 +78,8 @@ be done and reports back to SNS Topic with information of whether or not the job
   - Run Container
     ```docker run audio-transcoder```
 
+  - When transcoder-container is up it will directly start looking for messages in SQS and is by then ready to be used.
+  
 ## How To Use
   - Make sure SQS Queue Name and SNS Topic Name in environment variables or settings-file are correct.
   - Make sure transcoder container is running.
