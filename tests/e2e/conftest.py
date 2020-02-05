@@ -27,9 +27,9 @@ def setup_no_exceptions():
     bucket_name = str(uuid4())
 
     try:
-        s3.create_bucket(Bucket=bucket_name)
+        bucket = s3.create_bucket(Bucket=bucket_name)
     except ClientError:
-        s3.Bucket(bucket_name)
+        bucket = s3.Bucket(bucket_name)
 
     data = {
         "input": {
@@ -71,8 +71,10 @@ def setup_no_exceptions():
     response = sns.meta.client.create_topic(
         Name=topic_name
     )
-
     assert response["TopicArn"] == topic_arn
+    yield bucket
+    bucket.objects.all().delete()
+    bucket.delete()
 
 
 @pytest.fixture
@@ -87,9 +89,9 @@ def setup_error():
     bucket_name = str(uuid4())
 
     try:
-        s3.create_bucket(Bucket=bucket_name)
+        bucket = s3.create_bucket(Bucket=bucket_name)
     except ClientError:
-        s3.Bucket(bucket_name)
+        bucket = s3.Bucket(bucket_name)
 
     data = {
         "input": {
@@ -133,6 +135,9 @@ def setup_error():
     )
 
     assert response["TopicArn"] == topic_arn
+    yield bucket
+    bucket.objects.all().delete()
+    bucket.delete()
 
 
 def get_topic_name_by_arn(topic_arn):
