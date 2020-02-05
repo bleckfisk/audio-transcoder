@@ -34,6 +34,7 @@ be done and reports back to SNS Topic with information of whether or not the job
  ### For Dev and Local Testing
  - Edit AWS related environment variables in ```docker-compose.yml``` file to fit your needs.
     - Note: If you are running the transcoder outside of container, make sure AWS Environment variables are set or set them in the ```service/settings.py``` file. 
+    - Note 2: When using Localstack, ```AWS_ACCESS_KEY_ID``` and ```AWS_SECRET_ACCESS_KEY``` is not actually validated so these can be set to anything. A good practice is to call them test, for the sake of clarity. 
  
  - Build Transcoder Image and Container
  
@@ -59,11 +60,12 @@ be done and reports back to SNS Topic with information of whether or not the job
 
   ### For Production Environment
   - Make sure environment has access to the following environment variables set with correct values.
-    ```AWS_SQS_QUEUE_NAME```
-    ```AWS_SNS_TOPIC_ARN```
-    ```AWS_ACCESS_KEY_ID```
-    ```AWS_SECRET_ACCESS_KEY```
-    ```AWS_DEFAULT_REGION```
+    ```AWS_SQS_QUEUE_NAME```: Name of the queue the transcoder should start looking for messages once running. \
+    ```AWS_SNS_TOPIC_ARN```: ARN of the Topic where the transcoder should publish the status of the executed job. \
+    ```AWS_ACCESS_KEY_ID```: Your AWS Access Key ID \
+    ```AWS_SECRET_ACCESS_KEY```: Your AWS Secret Access Key \
+    ```AWS_DEFAULT_REGION```: The region you want Boto3 to default to as the transcoder doesn't contain any hard coded regions. \
+    
     This can be done in a multiple ways depending on how your production environment is set up.
 
     - Boto3 will default to the actual endpoints of AWS if the endpoint variables are unset which means that endpoints shouldn't be needed in production.  
