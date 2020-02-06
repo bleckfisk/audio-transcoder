@@ -9,7 +9,7 @@ COPY . /app
 WORKDIR /app
 
 RUN apt-get update \
-    && pip3 install --no-cache-dir -U pip pipenv \
+    && pip3 install --no-cache-dir -U pipenv \
     && pipenv install --system --deploy --dev
 
 # Install Pydub
