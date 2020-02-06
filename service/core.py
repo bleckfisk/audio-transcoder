@@ -30,7 +30,7 @@ def process_messages(messages):
             transcoded = transcode(file, output)
             upload(create_s3_resource(), transcoded, output)
         except ClientError as e:
-            errors.append(e)
+            errors.append(e.response["Error"]["Message"])
 
         except CouldntDecodeError:
             msg = "Coudln't decode due to bad format or corrupt data."
@@ -41,6 +41,9 @@ def process_messages(messages):
             errors.append(msg)
 
         except Exception:
+            """Unforseen exceptions should not break the process,
+            instead tell SNS that an unexted error occured"""
+
             msg = "Unexpected Error."
             errors.append(msg)
 

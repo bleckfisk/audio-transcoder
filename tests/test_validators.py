@@ -46,6 +46,30 @@ def test_validate_message_keys():
     assert validate_message_keys(payload) is True
 
 
+def test_validate_message_keys_wrong_order_returns_false():
+
+    payload = {
+        "outputs": [
+            {
+                "key": str(uuid4()),
+                "format": str(uuid4()),
+                "bucket": str(uuid4())
+            },
+            {
+                "key": str(uuid4()),
+                "format": str(uuid4()),
+                "bucket": str(uuid4())
+            }
+        ],
+        "input": {
+            "key": str(uuid4()),
+            "bucket": str(uuid4())
+        }
+    }
+
+    assert validate_message_keys(payload) is False
+
+
 def test_validate_message_keys_returns_false():
 
     payload = {
