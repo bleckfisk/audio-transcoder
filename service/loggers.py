@@ -1,6 +1,6 @@
 import logging
 from os import getcwd
-file_directory = getcwd() + '/errorlogs/logs.log'
+file_directory = getcwd() + '/service/errorlogs/logs.log'
 
 
 AWS_Logger = logging.getLogger('AWS_Logger')
