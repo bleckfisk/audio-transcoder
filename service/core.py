@@ -1,5 +1,6 @@
 import io
 import json
+from loggers import AWS_Logger, Transcoder_Logger
 from pydub.exceptions import CouldntDecodeError
 from botocore.exceptions import ClientError
 from .validators import validate_message, check_error_list
@@ -31,21 +32,25 @@ def process_messages(messages):
             upload(create_s3_resource(), transcoded, output)
         except ClientError as e:
             errors.append(e.response["Error"]["Message"])
+            AWS_Logger.exception(e)
 
-        except CouldntDecodeError:
+        except CouldntDecodeError as e:
             msg = "Coudln't decode due to bad format or corrupt data."
             errors.append(msg)
+            Transcoder_Logger.exception(e)
 
-        except IndexError:
+        except IndexError as e:
             msg = "Transcoding could not start. Format not found."
             errors.append(msg)
+            Transcoder_Logger.exception(e)
 
-        except Exception:
+        except Exception as e:
             """Unforseen exceptions should not break the process,
             instead tell SNS that an unexted error occured"""
 
             msg = "Unexpected Error."
             errors.append(msg)
+            Transcoder_Logger.exception(e)
 
     callback(
         AWS_SNS_TOPIC_ARN,
