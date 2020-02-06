@@ -44,12 +44,14 @@ be done and reports back to SNS Topic with information of whether or not the job
  - If you have turned the containers off, you can start them again with ```make run```
 
  #### Additional shorthands
-  - ```make localstack```: Runs the localstack container.\
-  - ```make transcoder```: Runs the transcoder container. \
+  - ```make localstack```: Runs the localstack container.
+  - ```make transcoder```: Runs the transcoder container. 
   - ```make test```: Runs the localstack container and then runs the tests for transcoder.
-    - There is currently an issue with running the tests while another transcoder container is up. If your tests fails, try to shut the currently running transcoder container before running this command. \
-  - ```make coverage```: Runs localstack and all tests for transcoder while additionally reporting code coverage in terminal.  \
-  - ```make build```: Builds the transcoder but doesn't run it. \
+  
+    - There is currently an issue with running the tests while another transcoder container is up. If your tests fails, try to shut the currently running transcoder container before running this command. 
+    
+  - ```make coverage```: Runs localstack and all tests for transcoder while additionally reporting code coverage in terminal.  
+  - ```make build```: Builds the transcoder but doesn't run it. 
   
   ### For Production Environment
   - Make sure environment has access to the following environment variables set with correct values.
