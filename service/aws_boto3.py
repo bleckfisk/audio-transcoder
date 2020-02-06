@@ -14,17 +14,17 @@ that are a requirement for the core part of the service.
 
 
 def create_sqs_resource():
-    # returns a resource (that contains a client) used to connect to SQS
+    """ returns a resource (that contains a client) used to connect to SQS """
     return boto3.resource('sqs', endpoint_url=AWS_SQS_ENDPOINT_URL)
 
 
 def create_s3_resource():
-    # returns a resource (that contains a client) used to connect to S3
+    """ returns a resource (that contains a client) used to connect to S3 """
     return boto3.resource('s3', endpoint_url=AWS_S3_ENDPOINT_URL)
 
 
 def create_sns_resource():
-    # returns a resource (that contains a client) used to connect to SNS
+    """returns a resource (that contains a client) used to connect to SNS"""
     return boto3.resource('sns', endpoint_url=AWS_SNS_ENDPOINT_URL)
 
 
@@ -32,7 +32,7 @@ def listen_sqs_queue(
     resource, queue_name,
         process_messages, delete_message, run_once=False):
     """
-    Will loop indefinetly to keep polling messages
+    Will loop infinitely to keep polling messages
     from queue and send the message to process_message()
     if the message has content and delete the message
     to avoid multiple handeling processes of the same message.
