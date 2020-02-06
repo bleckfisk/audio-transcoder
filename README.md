@@ -35,28 +35,22 @@ be done and reports back to SNS Topic with information of whether or not the job
     - Note: If you are running the transcoder outside of container, make sure AWS Environment variables are set or set them in the ```service/settings.py``` file. 
     - Note 2: When using Localstack, ```AWS_ACCESS_KEY_ID``` and ```AWS_SECRET_ACCESS_KEY``` is not actually validated so these can be set to anything. A good practice is to call them test, for the sake of clarity. 
  
- - Build Transcoder Image and Container
+ - Run the setup command. This will build the transcoder and localstack, test the transcoder and then run it, leaving it on for use. 
  
-    ```make build```
-
- - Run Localstack
-
-    ```docker-compose up localstack```  
-        - If you want it detached, add ```-d``` before localstack.
- 
-
- - Run Tests for Transcoder
-
-    ```make test```
-
- - Run Transcoder Container
-
-    ```docker-compose up -d transcoder```
+    ```make setup```
     
   - When transcoder-container is up it will directly start looking for messages in SQS and is by then ready to be used.
     
-  - If you after entering AWS Environment Variable want to do the docker-compose process in one command, you can enter ```make setup```. 
+  - If you have turned the containers off, you can start them again with ```make run```
 
+ #### Additional shorthands
+  - ```make localstack```: Runs the localstack container.\
+  - ```make transcoder```: Runs the transcoder container. \
+  - ```make test```: Runs the localstack container and then runs the tests for transcoder.
+    - There is currently an issue with running the tests while another transcoder container is up. If your tests fails, try to shut the currently running transcoder container before running this command. \
+  - ```make coverage```: Runs localstack and all tests for transcoder while additionally reporting code coverage in terminal.  \
+  - ```make build```: Builds the transcoder but doesn't run it. \
+  
   ### For Production Environment
   - Make sure environment has access to the following environment variables set with correct values.
     ```AWS_SQS_QUEUE_NAME```: Name of the queue the transcoder should start looking for messages in once running. \
