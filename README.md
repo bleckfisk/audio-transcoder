@@ -35,13 +35,13 @@ be done and reports back to SNS Topic with information of whether or not the job
     - Note: If you are running the transcoder outside of container, make sure AWS Environment variables are set or set them in the ```service/settings.py``` file. 
     - Note 2: When using Localstack, ```AWS_ACCESS_KEY_ID``` and ```AWS_SECRET_ACCESS_KEY``` is not actually validated so these can be set to anything. A good practice is to call them test, for the sake of clarity. 
  
- - Run the setup command. This will build the transcoder and localstack, test the transcoder and then run it, leaving it on for use. 
- 
+ - Run the setup command. 
     ```make setup```
-    
+ 
+  - This will build the transcoder and localstack, test the transcoder and then run it, leaving it on for use. 
   - When transcoder-container is up it will directly start looking for messages in SQS and is by then ready to be used.
     
-  - If you have turned the containers off, you can start them again with ```make run```
+ - If you have turned the containers off, you can start them again with ```make run```
 
  #### Additional shorthands
   - ```make localstack```: Runs the localstack container.\
