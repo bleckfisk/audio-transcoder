@@ -49,7 +49,7 @@ def setup_no_exceptions():
         ]
     }
 
-    file = f"{os.getcwd()}/tests/test_samples/file_example_WAV_10MG.wav"
+    file = f"{os.getcwd()}/tests/test_samples/supported/sound.wav"
     s3.meta.client.upload_file(file, bucket_name, data["input"]["key"])
 
     sqs = create_sqs_resource()
@@ -106,7 +106,7 @@ def setup_error():
         ]
     }
 
-    file = f"{os.getcwd()}/tests/test_samples/Test.pdf"
+    file = f"{os.getcwd()}/tests/test_samples/unsupported/Test.pdf"
     s3.meta.client.upload_file(file, bucket_name, data["input"]["key"])
 
     sqs = create_sqs_resource()
