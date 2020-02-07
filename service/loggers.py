@@ -1,6 +1,17 @@
 import logging
 from os import getcwd
 
+"""
+File for creating 1 logger per type of error / message that is created through the process.
+
+AWS_Logger logs exceptions from Boto3 (ClientError).
+
+Transcoder_Logger logs exceptions from Pydub (CouldntDecodeError, IndexError) 
+as well as eventual unexpected exceptions. 
+
+FFMPEG_logger logs all the processes done by FFMPEG
+"""
+
 exception_logfile = getcwd() + '/service/logging/exceptions.log'
 
 AWS_Logger = logging.getLogger('AWS_Logger')
@@ -18,8 +29,8 @@ AWS_Logger.addHandler(f_handler)
 Transcoder_Logger.addHandler(f_handler)
 
 
-ffmpeg_logfile = getcwd() + '/service/errorlogs/pydub_logs.log'
-ffmpeg_logger = logging.getLogger("pydub.converter")
+FFMPEG_logfile = getcwd() + '/service/errorlogs/FFMPEG.log'
+FFMPEG_logger = logging.getLogger("pydub.converter")
 
-ffmpeg_logger.setLevel(logging.DEBUG)
-ffmpeg_logger.addHandler(logging.FileHandler(ffmpeg_logfile))
+FFMPEG_logger.setLevel(logging.DEBUG)
+FFMPEG_logger.addHandler(logging.FileHandler(FFMPEG_logfile))
