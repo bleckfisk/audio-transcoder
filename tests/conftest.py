@@ -106,12 +106,12 @@ def unsupported_transcode_data():
 
     handles = []
 
-    with open(f"{os.getcwd()}/tests/test_samples/Cat03.jpg", "rb") as jpg:
+    with open(f"{os.getcwd()}/tests/test_samples/unsupported/Cat03.jpg", "rb") as jpg:
 
         handle_1 = io.BytesIO(jpg.read())
         handles.append(handle_1)
 
-    with open(f"{os.getcwd()}/tests/test_samples/Test.pdf", "rb") as pdf:
+    with open(f"{os.getcwd()}/tests/test_samples/unsupported/Test.pdf", "rb") as pdf:
 
         handle_2 = io.BytesIO(pdf.read())
         handles.append(handle_2)
@@ -130,7 +130,7 @@ def supported_transcode_data():
     handles = []
 
     with open(
-        f"{os.getcwd()}/tests/test_samples/file_example_WAV_10MG.wav", "rb"
+        f"{os.getcwd()}/tests/test_samples/supported/sound.wav", "rb"
             ) as wav:
 
         handle_3 = io.BytesIO(wav.read())
