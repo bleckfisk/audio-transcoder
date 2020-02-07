@@ -8,7 +8,7 @@ def transcode(file, output):
     and uses it as instructions for how the transcoding should be done.
     Returns a bytesIO-object to be handled later by upload() function.
     """
-    format = output['format']
+    format = output['format'].upper()
     handle = io.BytesIO()
     audio = AudioSegment.from_file(file)
     audio.export(handle, format=format)
