@@ -8,12 +8,14 @@ returning True or False depending on whether or not they are correct.
 
 
 def validate_message(data):
-    validations = [
-        validate_message_keys(data),
-        validate_input_keys(data["input"]),
-        validate_output_keys(data["outputs"])
-        ]
-
+    try:
+        validations = [
+            validate_message_keys(data),
+            validate_input_keys(data["input"]),
+            validate_output_keys(data["outputs"])
+            ]
+    except KeyError:
+        return False
     return False not in validations
 
 

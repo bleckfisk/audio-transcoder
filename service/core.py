@@ -11,19 +11,18 @@ from .settings import (
 from .transcoder import transcode
 
 
-def process_messages(messages):
+def process_message(message):
     """
     Function for handling the core functionality of the service.
     Validates the message, download file, transcode and upload file again
     based on inputs from SQS. Exceptions raised contribute to the errors-list
     which later is used in the callback to SNS Topic.
     """
-    message = json.loads(messages['Messages'][0]['Body'])
+
+    errors = []
 
     if not validate_message(message):
         raise Exception(f"Invalid Message: {message}")
-
-    errors = []
 
     for output in message["outputs"]:
         try:
@@ -59,8 +58,6 @@ def process_messages(messages):
         "error" if check_error_list(errors) else "success",
         errors if check_error_list(errors) else None
     )
-
-    return messages['Messages'][0]['ReceiptHandle']
 
 
 def upload(resource, transcoded, output):

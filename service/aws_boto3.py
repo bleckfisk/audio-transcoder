@@ -1,10 +1,15 @@
 from botocore.exceptions import ClientError
+import json
 import boto3
 from .settings import (
     AWS_SQS_ENDPOINT_URL,
     AWS_S3_ENDPOINT_URL,
-    AWS_SNS_ENDPOINT_URL
+    AWS_SNS_ENDPOINT_URL,
+    AWS_SNS_TOPIC_ARN
 )
+
+
+from .loggers import Transcoder_Logger
 
 
 """
@@ -30,7 +35,7 @@ def create_sns_resource():
 
 def listen_sqs_queue(
     resource, queue_name,
-        process_messages, delete_message, run_once=False):
+        process_message, delete_message, run_once=False):
     """
     Will loop infinitely to keep polling messages
     from queue and send the message to process_message()
@@ -46,8 +51,24 @@ def listen_sqs_queue(
             WaitTimeSeconds=10
         )
         if 'Messages' in messages:
-            receipthandle = process_messages(messages)
-            delete_message(create_sqs_resource(), queue, receipthandle)
+
+            message_body = json.loads(messages['Messages'][0]['Body'])
+            receipthandle = messages['Messages'][0]['ReceiptHandle']
+
+            try:
+                process_message(message_body)
+            except Exception as e:
+                from .core import callback
+                callback(
+                    AWS_SNS_TOPIC_ARN,
+                    message_body,
+                    message_body,
+                    "error",
+                    (f"Invalid Message: {message_body}")
+                )
+                Transcoder_Logger.exception(e)
+            finally:
+                delete_message(create_sqs_resource(), queue, receipthandle)
         if run_once:
             break
 
