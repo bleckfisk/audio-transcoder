@@ -31,6 +31,25 @@ VALID_DATA = {
     ]
 }
 
+INVALID_DATA = {
+    "bad_input": {
+        "key": "file_example_WAV_10MG.wav",
+        "bucket": "testbucket"
+    },
+    "bad_outputs": [
+        {
+            "key": "file_example_WAV_10MG.flac",
+            "format": "flac",
+            "bucket": "testbucket"
+        },
+        {
+            "key": "file_example_WAV_10MG.mp3",
+            "format": "mp3",
+            "bucket": "testbucket"
+        },
+    ]
+}
+
 
 @pytest.fixture
 def s3_bucket():
@@ -76,6 +95,25 @@ def sqs_queue():
     resource.meta.client.send_message(
         QueueUrl=queue.get("QueueUrl"),
         MessageBody=json.dumps(VALID_DATA)
+    )
+
+    yield queue
+
+
+@pytest.fixture
+def sqs_queue_bad_message_keys():
+    from service.aws_boto3 import create_sqs_resource
+    resource = create_sqs_resource()
+
+    queue_name = str(uuid4())
+
+    queue = resource.meta.client.create_queue(
+        QueueName=queue_name
+    )
+
+    resource.meta.client.send_message(
+        QueueUrl=queue.get("QueueUrl"),
+        MessageBody=json.dumps(INVALID_DATA)
     )
 
     yield queue

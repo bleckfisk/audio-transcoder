@@ -262,3 +262,40 @@ def test_process_message(
             io.BytesIO(),
             loaded_message_body[output]
             )
+
+
+@mock.patch("service.core.callback")
+@mock.patch("service.core.upload")
+@mock.patch("service.transcoder.transcode", return_value=io.BytesIO)
+@mock.patch("service.core.download", return_value=io.BytesIO)
+@mock.patch("service.validators.validate_message")
+def test_process_message_bad_message_keys(
+    mock_validate_message, mock_download, mock_transcode,
+        mock_upload, mock_callback, sqs_queue_bad_message_keys):
+
+    """
+    This test proves that when input and output keys are bad
+    we don't try to process them, instead we handle the exception and
+    calls callback() accordingly.
+    """
+
+    resource = create_sqs_resource()
+    sqs_queue = sqs_queue_bad_message_keys
+
+    messages = resource.meta.client.receive_message(
+        QueueUrl=sqs_queue.get("QueueUrl"),
+        MaxNumberOfMessages=1,
+        WaitTimeSeconds=0
+    )
+
+    loaded_message_body = json.loads(messages['Messages'][0]['Body'])
+
+    with pytest.raises(Exception):
+        process_message(loaded_message_body)
+
+        assert mock_validate_message.called_once_with(loaded_message_body)
+
+        assert mock_download.call_count == 0
+        assert mock_transcode.call_count == 0
+        assert mock_upload.call_count == 0
+        assert mock_callback.call_count == 1
