@@ -152,3 +152,9 @@ def supported_transcode_data():
 def list_of_supported_files():
     testfiles_directory = f'{os.getcwd()}/tests/test_samples/supported'
     return os.listdir(testfiles_directory)
+
+
+@pytest.fixture
+def list_of_unsupported_files():
+    testfiles_directory = f'{os.getcwd()}/tests/test_samples/unsupported'
+    return os.listdir(testfiles_directory)
