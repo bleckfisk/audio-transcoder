@@ -30,7 +30,8 @@ def test_download(s3_bucket):
     assert subject.read() == body
 
 
-def test_download_key_not_exists(s3_bucket):
+@mock.patch('service.loggers.AWS_Logger')
+def test_download_key_not_exists(mock_AWS_Logger, s3_bucket):
     """
     Test for exception handeling.
     Will pass if the exception is raised, and is raised because of
@@ -51,9 +52,11 @@ def test_download_key_not_exists(s3_bucket):
 
     with pytest.raises(ClientError):
         download(create_s3_resource(), payload)
+        assert mock_AWS_Logger.call_count == 1
 
 
-def test_download_bucket_not_exists(s3_bucket):
+@mock.patch('servuce.loggers.AWS_Logger')
+def test_download_bucket_not_exists(mock_AWS_Logger, s3_bucket):
     """
     Test for exception handeling.
     Will pass if exception is raised, and is raised because
@@ -72,6 +75,7 @@ def test_download_bucket_not_exists(s3_bucket):
 
     with pytest.raises(ClientError):
         download(create_s3_resource(), payload)
+        assert mock_AWS_Logger.call_count == 1
 
 
 def test_upload(s3_bucket):
@@ -99,7 +103,8 @@ def test_upload(s3_bucket):
         assert obj.key == key
 
 
-def test_upload_bucket_not_exists(s3_bucket):
+@mock.patch('service.loggers.AWS_Logger')
+def test_upload_bucket_not_exists(mock_AWS_Logger, s3_bucket):
     """
     Test for exception handeling.
     Will pass if exception is raised, and is raised because
@@ -119,6 +124,7 @@ def test_upload_bucket_not_exists(s3_bucket):
 
     with pytest.raises(ClientError):
         upload(create_s3_resource(), file_to_upload, payload)
+        assert mock_AWS_Logger.call_count == 1
 
 
 def test_upload_download_data_assertion(s3_bucket):

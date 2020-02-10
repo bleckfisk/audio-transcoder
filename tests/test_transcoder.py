@@ -1,6 +1,7 @@
 import pytest
 import os
 from service.transcoder import transcode
+from unittest import mock
 
 
 def test_all_supported_testfiles(list_of_supported_files):
@@ -24,7 +25,8 @@ def test_all_supported_testfiles(list_of_supported_files):
             transcode(f, output)
 
 
-def test_all_unsupported_testfiles(list_of_unsupported_files):
+@mock.patch('service.loggers.Transcoder_Logger')
+def test_all_unsupported_testfiles(mock_Logger, list_of_unsupported_files):
 
     """
     Tests that asserts that an exception is thrown for each unsupported file
@@ -44,3 +46,4 @@ def test_all_unsupported_testfiles(list_of_unsupported_files):
 
             with pytest.raises((Exception)):
                 transcode(f, output)
+                assert mock_Logger.call_count == 1
