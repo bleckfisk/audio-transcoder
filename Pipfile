@@ -12,6 +12,7 @@ boto3 = "*"
 pytest = "*"
 pytest-cov = "*"
 coverage = "*"
+flake8 = "*"
 
 [requires]
 python_version = "3.7"
