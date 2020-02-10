@@ -82,16 +82,16 @@ def test_listen_sqs_queue(sqs_queue_name):
     without having to run them
     """
 
-    process_messages_mock = mock.Mock(return_value=['', ''])
+    process_message_mock = mock.Mock()
     delete_message_mock = mock.Mock()
 
     listen_sqs_queue(
         create_sqs_resource(),
         sqs_queue_name,
-        process_messages_mock,
+        process_message_mock,
         delete_message_mock,
         run_once=True
     )
 
     delete_message_mock.assert_called_once()
-    process_messages_mock.assert_called_once()
+    process_message_mock.assert_called_once()

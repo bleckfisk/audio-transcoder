@@ -1,7 +1,7 @@
 import io
 import pytest
 import json
-from service.core import upload, download, callback, process_messages
+from service.core import upload, download, callback, process_message
 from uuid import uuid4
 from service.aws_boto3 import create_s3_resource, create_sqs_resource
 from botocore.exceptions import ClientError
@@ -55,7 +55,7 @@ def test_download_key_not_exists(mock_AWS_Logger, s3_bucket):
         assert mock_AWS_Logger.call_count == 1
 
 
-@mock.patch('servuce.loggers.AWS_Logger')
+@mock.patch('service.loggers.AWS_Logger')
 def test_download_bucket_not_exists(mock_AWS_Logger, s3_bucket):
     """
     Test for exception handeling.
@@ -220,14 +220,14 @@ def test_callback_errors(sns_topic_arn):
 @mock.patch("service.transcoder.transcode", return_value=io.BytesIO)
 @mock.patch("service.core.download", return_value=io.BytesIO)
 @mock.patch("service.validators.validate_message")
-def test_process_messages(
+def test_process_message(
     mock_validate_message, mock_download, mock_transcode,
         mock_upload, mock_callback, sqs_queue):
 
     """
-    Test for process_messages many different calls to other functions.
+    Test for process_message many different calls to other functions.
     The dependant functions are mocked with patch so that
-    process_messages can be tested in isolation without actually
+    process_message can be tested in isolation without actually
     calling the dependant functions.
     """
 
@@ -241,8 +241,8 @@ def test_process_messages(
 
     loaded_message_body = json.loads(messages['Messages'][0]['Body'])
 
-    handle = process_messages(messages)
-    assert handle == messages["Messages"][0]["ReceiptHandle"]
+    process_message(loaded_message_body)
+
     assert mock_validate_message.called_once_with(loaded_message_body)
 
     assert mock_download.called_with(

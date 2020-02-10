@@ -1,5 +1,5 @@
 from unittest import mock
-from service.core import process_messages
+from service.core import process_message
 from service.aws_boto3 import (
     listen_sqs_queue,
     create_sqs_resource,
@@ -26,7 +26,7 @@ def test_service(mock_publish_sns, setup_no_exceptions):
     listen_sqs_queue(
         create_sqs_resource(),
         AWS_SQS_QUEUE_NAME,
-        process_messages,
+        process_message,
         delete_message,
         True
     )
@@ -39,7 +39,7 @@ def test_service_fails_callback_still_runs(mock_publish_sns, setup_error):
     listen_sqs_queue(
         create_sqs_resource(),
         AWS_SQS_QUEUE_NAME,
-        process_messages,
+        process_message,
         delete_message,
         True
     )
