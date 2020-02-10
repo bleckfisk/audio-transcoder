@@ -106,12 +106,16 @@ def unsupported_transcode_data():
 
     handles = []
 
-    with open(f"{os.getcwd()}/tests/test_samples/unsupported/Cat03.jpg", "rb") as jpg:
+    with open(
+        f"{os.getcwd()}/tests/test_samples/unsupported/Cat03.jpg", "rb"
+            ) as jpg:
 
         handle_1 = io.BytesIO(jpg.read())
         handles.append(handle_1)
 
-    with open(f"{os.getcwd()}/tests/test_samples/unsupported/Test.pdf", "rb") as pdf:
+    with open(
+        f"{os.getcwd()}/tests/test_samples/unsupported/Test.pdf", "rb"
+            ) as pdf:
 
         handle_2 = io.BytesIO(pdf.read())
         handles.append(handle_2)
@@ -142,3 +146,9 @@ def supported_transcode_data():
     }
 
     return to_transcoder
+
+
+@pytest.fixture
+def list_of_supported_files():
+    testfiles_directory = f'{os.getcwd()}/tests/test_samples/supported'
+    return os.listdir(testfiles_directory)

@@ -1,5 +1,6 @@
 import pytest
 import io
+import os
 from service.transcoder import transcode
 from pydub.audio_segment import CouldntDecodeError
 
@@ -38,3 +39,19 @@ def test_transcode_supported_data(supported_transcode_data):
     file = supported_transcode_data["handles"][0]
     output = supported_transcode_data["outputs"]
     transcode(file, output)
+
+
+def test_all_supported_testfiles(list_of_supported_files):
+
+    output = {
+        "key": "not-used-in-this-function",
+        "format": "mp3",
+        "bucket": "not-used-in-this-function"
+    }
+
+    for file in list_of_supported_files:
+        with open(
+            f"{os.getcwd()}/tests/test_samples/supported/{file}", "rb"
+                ) as f:
+
+            transcode(f, output)
