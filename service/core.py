@@ -43,6 +43,11 @@ def process_message(message):
             errors.append(msg)
             Transcoder_Logger.exception(e)
 
+        except KeyError as e:
+            msg = "Transcoding could not start. Format not found."
+            errors.append(msg)
+            Transcoder_Logger.exception(e)
+
         except Exception as e:
             """Unforseen exceptions should not break the process,
             instead tell SNS that an unexted error occured"""
