@@ -1,11 +1,14 @@
+from pydub import AudioSegment
+import os
+from pydub.utils import mediainfo
 from unittest import mock
 from service.core import process_message
 from service.aws_boto3 import (
     listen_sqs_queue,
+    create_s3_resource,
     create_sqs_resource,
     delete_message
 )
-
 
 from service.settings import (
     AWS_SQS_QUEUE_NAME
@@ -31,7 +34,32 @@ def test_service(mock_publish_sns, setup_no_exceptions):
         True
     )
 
-    assert mock_publish_sns.call_count == 1
+    wav_directory = setup_no_exceptions[0]
+    data = setup_no_exceptions[1]
+
+    sound = AudioSegment.from_file(wav_directory)
+
+    for target in data:
+
+        create_s3_resource().meta.client.download_file(
+            target["bucket"],
+            target["key"],
+            target["key"]
+            )
+
+        sound_2 = AudioSegment.from_file(target["key"])
+
+        info = mediainfo(target["key"])
+        wav_info = mediainfo(wav_directory)
+
+        assert info["format_name"].upper() == target["format"].upper()
+        assert info["sample_rate"] == wav_info["sample_rate"]
+        assert info["channels"] == wav_info["channels"]
+        assert len(sound) == len(sound_2)
+
+        os.remove(target["key"])
+
+        assert mock_publish_sns.call_count == 1
 
 
 @mock.patch("service.core.publish_sns")

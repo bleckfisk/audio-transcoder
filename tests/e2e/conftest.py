@@ -67,7 +67,7 @@ def setup_no_exceptions():
     )
 
     assert response["TopicArn"] == topic_arn
-    yield bucket
+    yield [file, data["outputs"]]
     bucket.objects.all().delete()
     bucket.delete()
 
