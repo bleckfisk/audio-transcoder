@@ -2,7 +2,7 @@
 
 ## About
 
-This Transcoder is a software that lets you transcode audio files between wide variety of formats.
+This Transcoder is a software that lets you transcode audio files between a variety of formats.
 It is built with Amazon Web Services Infrastructure in mind and listens to SQS Queue for jobs to 
 be done and reports back to SNS Topic with information of whether or not the job succeeded or not.
 
@@ -31,7 +31,7 @@ be done and reports back to SNS Topic with information of whether or not the job
     ```git clone https://github.com/bleckfisk/audio-transcoder```
 
  ### For Dev and Local Testing
- - Edit AWS related environment variables in ```docker-compose.yml``` file to fit your needs.
+ - If needed, edit AWS related environment variables in ```docker-compose.yml``` file to fit your needs.
     - Note: If you are running the transcoder outside of container, make sure AWS Environment variables are set or set them in the ```service/settings.py``` file. 
     - Note 2: When using Localstack, ```AWS_ACCESS_KEY_ID``` and ```AWS_SECRET_ACCESS_KEY``` is not actually validated so these can be set to anything. A good practice is to call them test, for the sake of clarity. 
  
