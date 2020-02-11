@@ -139,6 +139,25 @@ def sqs_queue_name():
 
 
 @pytest.fixture
+def sqs_queue_name_bad_message_keys():
+    from service.aws_boto3 import create_sqs_resource
+    resource = create_sqs_resource()
+
+    queue_name = str(uuid4())
+
+    queue = resource.meta.client.create_queue(
+        QueueName=queue_name
+    )
+
+    resource.meta.client.send_message(
+        QueueUrl=queue.get("QueueUrl"),
+        MessageBody=json.dumps(INVALID_DATA)
+    )
+
+    yield queue_name
+
+
+@pytest.fixture
 def list_of_supported_files():
     testfiles_directory = f'{os.getcwd()}/tests/test_samples/supported'
     return os.listdir(testfiles_directory)

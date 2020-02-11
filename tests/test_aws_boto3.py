@@ -95,3 +95,34 @@ def test_listen_sqs_queue(sqs_queue_name):
 
     delete_message_mock.assert_called_once()
     process_message_mock.assert_called_once()
+
+
+@mock.patch('service.core.callback')
+@mock.patch('service.loggers.Service_Logger')
+def test_listen_sqs_queue_bad_message_keys(
+    logger_mock,
+    callback_mock,
+    sqs_queue_name_bad_message_keys
+        ):
+
+    """
+    This test proves that when exception is raised due to bad keys
+    we call the callback function and deletes the message even if it
+    isn't fully processed.
+    """
+    sqs_queue_name = sqs_queue_name_bad_message_keys
+    process_message_mock = mock.Mock(side_effect=Exception)
+    delete_message_mock = mock.Mock()
+
+    listen_sqs_queue(
+        create_sqs_resource(),
+        sqs_queue_name,
+        process_message_mock,
+        delete_message_mock,
+        run_once=True
+    )
+
+    assert process_message_mock.call_count == 1
+    assert callback_mock.call_count == 1
+    assert delete_message_mock.call_count == 1
+
