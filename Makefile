@@ -20,7 +20,7 @@ setup:
 
 coverage:
 	@make -s localstack
-	@docker-compose run --rm --entrypoint 'pytest --cov=service' transcoder
+	@docker-compose run --rm --entrypoint 'pytest --cov-report term-missing --cov=service' transcoder
 
 test:
 	@make -s localstack
