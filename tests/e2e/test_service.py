@@ -73,8 +73,6 @@ def test_service_fails_callback_still_runs(mock_publish_sns, setup_error):
     exceptions are thrown in the middle of the program.
     """
 
-    topic_arn = setup_error
-
     listen_sqs_queue(
         create_sqs_resource(),
         AWS_SQS_QUEUE_NAME,
