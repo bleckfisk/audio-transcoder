@@ -9,7 +9,7 @@ from .settings import (
 )
 
 
-from .loggers import Transcoder_Logger
+from .loggers import Service_Logger
 
 
 """
@@ -66,7 +66,7 @@ def listen_sqs_queue(
                     "error",
                     (f"Invalid Message: {message_body}")
                 )
-                Transcoder_Logger.exception(e)
+                Service_Logger.exception(e)
             finally:
                 delete_message(create_sqs_resource(), queue, receipthandle)
         if run_once:

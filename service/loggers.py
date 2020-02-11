@@ -7,7 +7,7 @@ that is created through the process.
 
 AWS_Logger logs exceptions from Boto3 (ClientError).
 
-Transcoder_Logger logs exceptions from Pydub (CouldntDecodeError, IndexError)
+Service_Logger logs exceptions from Pydub (CouldntDecodeError, IndexError)
 as well as eventual unexpected exceptions.
 
 FFMPEG_logger logs all the processes done by FFMPEG
@@ -16,7 +16,7 @@ FFMPEG_logger logs all the processes done by FFMPEG
 exception_logfile = getcwd() + '/service/logging/exceptions.log'
 
 AWS_Logger = logging.getLogger('AWS_Logger')
-Transcoder_Logger = logging.getLogger('Transcoder_Logger')
+Service_Logger = logging.getLogger('Service_Logger')
 
 f_handler = logging.FileHandler(exception_logfile)
 f_handler.setLevel(logging.WARNING)
@@ -27,7 +27,7 @@ f_format = logging.Formatter(
 f_handler.setFormatter(f_format)
 
 AWS_Logger.addHandler(f_handler)
-Transcoder_Logger.addHandler(f_handler)
+Service_Logger.addHandler(f_handler)
 
 
 FFMPEG_logfile = getcwd() + '/service/logging/ffmpeg.log'

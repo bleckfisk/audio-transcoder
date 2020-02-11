@@ -26,7 +26,7 @@ def test_all_supported_testfiles(list_of_supported_files):
             transcode(f, output)
 
 
-@mock.patch('service.loggers.Transcoder_Logger')
+@mock.patch('service.loggers.Service_Logger')
 def test_all_unsupported_testfiles(mock_Logger, list_of_unsupported_files):
 
     """
