@@ -64,6 +64,17 @@ def test_service(mock_publish_sns, setup_no_exceptions):
 
 @mock.patch("service.core.publish_sns")
 def test_service_fails_callback_still_runs(mock_publish_sns, setup_error):
+    """
+    The set_error fixture sets up a context of trying to transcode a pdf file.
+    This will not succeed and the code will handle the exception thrown
+    by pydub accordingly, resulting in calling SNS with an error.
+
+    This test proves that the SNS call is executed even if
+    exceptions are thrown in the middle of the program.
+    """
+
+    topic_arn = setup_error
+
     listen_sqs_queue(
         create_sqs_resource(),
         AWS_SQS_QUEUE_NAME,
