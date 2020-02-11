@@ -7,10 +7,13 @@ that is created through the process.
 
 AWS_Logger logs exceptions from Boto3 (ClientError).
 
-Service_Logger logs exceptions from Pydub (CouldntDecodeError, IndexError)
+Service_Logger logs exceptions from
+Pydub (CouldntDecodeError, IndexError & KeyError)
 as well as eventual unexpected exceptions.
 
-FFMPEG_logger logs all the processes done by FFMPEG
+FFMPEG_logger logs all the processes done by FFMPEG.
+These are not exceptions, but can give insight if the
+transcoding doesn't work or doesn't do as intended.
 """
 
 exception_logfile = getcwd() + '/service/logging/exceptions.log'
