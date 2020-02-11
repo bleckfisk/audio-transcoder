@@ -1,5 +1,6 @@
 import logging
 from os import getcwd
+from .settings import ffmpeg_logging
 
 """
 File for creating 1 logger per type of error / message
@@ -32,9 +33,9 @@ f_handler.setFormatter(f_format)
 AWS_Logger.addHandler(f_handler)
 Service_Logger.addHandler(f_handler)
 
+if ffmpeg_logging:
+    FFMPEG_logfile = getcwd() + '/service/logging/ffmpeg.log'
+    FFMPEG_logger = logging.getLogger("pydub.converter")
 
-FFMPEG_logfile = getcwd() + '/service/logging/ffmpeg.log'
-FFMPEG_logger = logging.getLogger("pydub.converter")
-
-FFMPEG_logger.setLevel(logging.DEBUG)
-FFMPEG_logger.addHandler(logging.FileHandler(FFMPEG_logfile))
+    FFMPEG_logger.setLevel(logging.DEBUG)
+    FFMPEG_logger.addHandler(logging.FileHandler(FFMPEG_logfile))

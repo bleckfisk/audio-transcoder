@@ -1,5 +1,8 @@
 # Logfile for processes in FFMPEG through pydub (service/transcoder.py).
 # Look here if something doesn't seem to work like intended, but doesn't throw exception.
 
-Note: Tests will append to this file so make sure you don't mix up actual errors with test errors.
+# This is by default turned off to save memory, implemented as an option for debugging. 
+# Set ffmpeg_logging to True in the settings.py file to activate this feature. 
+
+# Note: Tests will append to this file so make sure you don't mix up actual errors with test errors.
 -----------------------------------------------------------
