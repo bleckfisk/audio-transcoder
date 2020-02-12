@@ -2,7 +2,7 @@ import pytest
 import os
 from service.transcoder import transcode
 from unittest import mock
-from pydub.exceptions import CouldntDecodeError
+from pydub.exceptions import CouldntDecodeError, CouldntEncodeError
 
 
 def test_all_supported_testfiles(list_of_supported_files):
@@ -45,6 +45,12 @@ def test_all_unsupported_testfiles(mock_Logger, list_of_unsupported_files):
             f"{os.getcwd()}/tests/test_samples/unsupported/{file}", "rb"
                 ) as f:
 
-            with pytest.raises((CouldntDecodeError, IndexError, KeyError)):
+            with pytest.raises((
+                    CouldntDecodeError,
+                    CouldntEncodeError,
+                    IndexError,
+                    KeyError
+                    )):
+
                 transcode(f, output)
                 assert mock_Logger.call_count == 1
