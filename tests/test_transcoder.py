@@ -47,10 +47,30 @@ def test_all_unsupported_testfiles(mock_Logger, list_of_unsupported_files):
 
             with pytest.raises((
                     CouldntDecodeError,
-                    CouldntEncodeError,
                     IndexError,
                     KeyError
                     )):
 
                 transcode(f, output)
-                assert mock_Logger.call_count == 1
+
+
+@mock.patch('service.loggers.Service_Logger')
+def test_supported_input_bad_output(mock_Logger):
+    """
+    This test tests that CouldntEncodeError is thrown when trying to export
+    a file format not supported, while the input is supported.
+    Sound to video for example.
+    """
+
+    output = {
+        "key": "not-used-in-this-function",
+        "format": "m4a",
+        "bucket": "not-used-in-this-function"
+    }
+
+    with open(
+        f"{os.getcwd()}/tests/test_samples/supported/sound.wav", "rb"
+            ) as f:
+
+        with pytest.raises(CouldntEncodeError):
+            transcode(f, output)
