@@ -32,7 +32,7 @@ def setup_no_exceptions():
 
     data = {
         "input": {
-            "key": "unique_id.wav",
+            "key": "unique_id.aiff",
             "bucket": bucket_name
         },
         "outputs": [
@@ -45,11 +45,21 @@ def setup_no_exceptions():
                 "key": "unique_id.mp3",
                 "format": "mp3",
                 "bucket": bucket_name
+            },
+            {
+                "key": "unique_id_2.wav",
+                "format": "wav",
+                "bucket": bucket_name
+            },
+            {
+                "key": "unique_id.aiff",
+                "format": "aiff",
+                "bucket": bucket_name
             }
         ]
     }
 
-    file = f"{os.getcwd()}/tests/test_samples/supported/sound.wav"
+    file = f"{os.getcwd()}/tests/test_samples/supported/sound.aiff"
     s3.meta.client.upload_file(file, bucket_name, data["input"]["key"])
 
     sqs = create_sqs_resource()
@@ -101,6 +111,16 @@ def setup_error():
             {
                 "key": str(uuid4()),
                 "format": "mp3",
+                "bucket": bucket_name
+            },
+            {
+                "key": str(uuid4()),
+                "format": "wav",
+                "bucket": bucket_name
+            },
+            {
+                "key": str(uuid4()),
+                "format": "aiff",
                 "bucket": bucket_name
             }
         ]

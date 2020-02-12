@@ -118,6 +118,6 @@ callback = {
  - This software uses FFMPEG with libavcodec to decode and encode files. Visit their website for full information about the codec and what it supports.
   - https://ffmpeg.org/documentation.html
 
- - Currently I only test the following supported formats.
-    - Wav, aac, ac3, aiff, flac, mp3, ogg, opus, ts, wma, flv & ogv.
-    - More formats can be supported through the codec, but as the test data is limited I only prove the following formats to work.
+ - Currently I only test the following supported formats thoroughly.
+    - Wav, aiff, flac, mp3
+    - More formats can be supported through the codec, but as the test data is limited I only test the following formats to work.
