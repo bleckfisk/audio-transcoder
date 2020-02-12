@@ -42,6 +42,7 @@ def process_message(message):
             msg = "Coudln't encode asked format due to incompatibility."
             errors.append(msg)
             Service_Logger.exception(e)
+
         except IndexError as e:
             msg = "Transcoding could not start. Format not found."
             errors.append(msg)

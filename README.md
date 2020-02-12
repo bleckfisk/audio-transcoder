@@ -120,4 +120,4 @@ callback = {
 
  - Currently I only test the following supported formats thoroughly.
     - Wav, aiff, flac, mp3
-    - More formats can be supported through the codec, but as the test data is limited I only test the following formats to work.
+    - More formats can be supported through the codec, for instance some video formats can be transcoded inte audio-only-files, but as the test data is limited I only test the following formats to work.
