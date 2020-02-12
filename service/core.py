@@ -1,6 +1,6 @@
 import io
 import json
-from pydub.exceptions import CouldntDecodeError
+from pydub.exceptions import CouldntDecodeError, CouldntEncodeError
 from botocore.exceptions import ClientError
 from .validators import validate_message, check_error_list
 from .aws_boto3 import create_s3_resource, create_sns_resource, publish_sns
@@ -38,6 +38,10 @@ def process_message(message):
             errors.append(msg)
             Service_Logger.exception(e)
 
+        except CouldntEncodeError as e:
+            msg = "Coudln't encode asked format due to incompatibility."
+            errors.append(msg)
+            Service_Logger.exception(e)
         except IndexError as e:
             msg = "Transcoding could not start. Format not found."
             errors.append(msg)
