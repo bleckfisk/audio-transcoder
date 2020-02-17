@@ -19,6 +19,7 @@ services:
       context: .
       args:
         PIPENV_ARGS: "--dev"
+    command: ["bash", "wait-for", "localstack:4561", "-t", "30", "--", "python", "-m", "service"]
     depends_on:
       - localstack
     volumes:
