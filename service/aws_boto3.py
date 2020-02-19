@@ -8,9 +8,7 @@ from .settings import (
     AWS_SNS_TOPIC_ARN
 )
 
-
 from .loggers import Service_Logger
-
 
 """
 Following functions are data passing functions for AWS
@@ -68,12 +66,10 @@ def listen_sqs_queue(
                 )
                 Service_Logger.exception(e)
             finally:
-
                 resource.meta.client.delete_message(
                     QueueUrl=queue.get("QueueUrl"),
                     ReceiptHandle=receipthandle
                 )
-
         if run_once:
             break
 

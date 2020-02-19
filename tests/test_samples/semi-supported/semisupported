@@ -1,0 +1,3 @@
+this folder contains files that are supported by the codec and can be transcoded to WAV/Aiff/FLAC
+but not the other way around. This makes them somewhat supported but not 100% and therefore this 
+service should not be relied on when it comes to these formats. 
