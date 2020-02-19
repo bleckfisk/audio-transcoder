@@ -35,7 +35,7 @@ def create_sns_resource():
 
 def listen_sqs_queue(
     resource, queue_name,
-        process_message, delete_message, run_once=False):
+        process_message, run_once=False):
     """
     Will loop infinitely to keep polling messages
     from queue and send the message to process_message()
@@ -68,7 +68,12 @@ def listen_sqs_queue(
                 )
                 Service_Logger.exception(e)
             finally:
-                delete_message(create_sqs_resource(), queue, receipthandle)
+
+                resource.meta.client.delete_message(
+                    QueueUrl=queue.get("QueueUrl"),
+                    ReceiptHandle=receipthandle
+                )
+
         if run_once:
             break
 
@@ -89,13 +94,3 @@ def publish_sns(resource, topicarn, message):
     except ClientError as e:
         if e.response["Error"]["Code"] == "NotFound":
             raise
-
-
-def delete_message(resource, queue, ReceiptHandle):
-    """
-    Deletes a message from queue to avoid handling same message twice.
-    """
-    resource.meta.client.delete_message(
-        QueueUrl=queue.get("QueueUrl"),
-        ReceiptHandle=ReceiptHandle
-        )

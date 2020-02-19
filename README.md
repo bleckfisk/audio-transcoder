@@ -32,18 +32,18 @@ be done and reports back to SNS Topic with information of whether or not the job
 
  ### For Dev and Local Testing
  - If needed, edit AWS related environment variables in ```docker-compose.yml``` file to fit your needs.
-    - Note: If you are running the transcoder outside of container, make sure AWS Environment variables are set or set them in the ```service/settings.py``` file. 
-    - Note 2: When using Localstack, ```AWS_ACCESS_KEY_ID``` and ```AWS_SECRET_ACCESS_KEY``` is not actually validated so these can be set to anything. A good practice is to call them test, for the sake of clarity. 
+    - Note: If you are running the transcoder outside of docker, make sure AWS Environment variables are set on your machine or set them in the ```service/settings.py``` file. 
+    - Note 2: When using Localstack, ```AWS_ACCESS_KEY_ID``` and ```AWS_SECRET_ACCESS_KEY``` is not actually validated so these can be set to anything. A good practice is to name them test, for the sake of clarity. 
  
  - Run the setup command. 
     ```make setup```
  
   - This will build the transcoder and localstack, test the transcoder and then run it, leaving it on for use. 
-  - When transcoder-container is up it will directly start looking for messages in SQS and is by then ready to be used.
+  - When transcoder-container is up it will directly start looking for messages in SQS Queue and is by then ready to be used.
     
- - If you have turned the containers off, you can start them again with ```make run```
+ - If you have turned the containers off with ```docker-compose down```, you can start them again with ```make run```
 
- #### Additional shorthands
+ #### Additional shorthandss
   - ```make localstack```: Runs the localstack container.
   - ```make transcoder```: Runs the transcoder container. 
   - ```make test```: Runs the localstack container and then runs the tests for transcoder.
@@ -74,7 +74,7 @@ be done and reports back to SNS Topic with information of whether or not the job
   - Run Container
     ```docker run audio-transcoder```
 
-  - When transcoder-container is up it will directly start looking for messages in SQS and is by then ready to be used.
+  - When transcoder-container is up it will directly start looking for messages in SQS Queue and is by then ready to be used.
   
 ## How To Use
   - Make sure SQS Queue Name and SNS Topic Name in environment variables or settings-file are correct.
