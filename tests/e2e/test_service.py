@@ -7,7 +7,6 @@ from service.aws_boto3 import (
     listen_sqs_queue,
     create_s3_resource,
     create_sqs_resource,
-    delete_message
 )
 
 from service.settings import (
@@ -30,7 +29,6 @@ def test_service(mock_publish_sns, setup_no_exceptions):
         create_sqs_resource(),
         AWS_SQS_QUEUE_NAME,
         process_message,
-        delete_message,
         True
     )
 
@@ -77,7 +75,6 @@ def test_service_fails_callback_still_runs(mock_publish_sns, setup_error):
         create_sqs_resource(),
         AWS_SQS_QUEUE_NAME,
         process_message,
-        delete_message,
         True
     )
 

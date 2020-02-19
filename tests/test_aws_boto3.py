@@ -7,8 +7,7 @@ from service.aws_boto3 import (
     create_s3_resource,
     create_sqs_resource,
     listen_sqs_queue,
-    publish_sns,
-    delete_message
+    publish_sns
 )
 
 from service.settings import (
@@ -64,7 +63,10 @@ def test_delete_message(sqs_queue):
 
     receipthandle_1 = messages_1["Messages"][0]["ReceiptHandle"]
 
-    delete_message(resource, sqs_queue, receipthandle_1)
+    resource.meta.client.delete_message(
+        QueueUrl=sqs_queue.get("QueueUrl"),
+        ReceiptHandle=receipthandle_1
+    )
 
     messages_2 = resource.meta.client.receive_message(
         QueueUrl=sqs_queue.get("QueueUrl"),
@@ -83,17 +85,14 @@ def test_listen_sqs_queue(sqs_queue_name):
     """
 
     process_message_mock = mock.Mock()
-    delete_message_mock = mock.Mock()
 
     listen_sqs_queue(
         create_sqs_resource(),
         sqs_queue_name,
         process_message_mock,
-        delete_message_mock,
         run_once=True
     )
 
-    delete_message_mock.assert_called_once()
     process_message_mock.assert_called_once()
 
 
@@ -112,17 +111,13 @@ def test_listen_sqs_queue_bad_message_keys(
     """
     sqs_queue_name = sqs_queue_name_bad_message_keys
     process_message_mock = mock.Mock(side_effect=Exception)
-    delete_message_mock = mock.Mock()
 
     listen_sqs_queue(
         create_sqs_resource(),
         sqs_queue_name,
         process_message_mock,
-        delete_message_mock,
         run_once=True
     )
 
     assert process_message_mock.call_count == 1
     assert callback_mock.call_count == 1
-    assert delete_message_mock.call_count == 1
-
