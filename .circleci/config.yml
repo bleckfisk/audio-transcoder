@@ -1,0 +1,24 @@
+version: 2
+
+jobs:
+  test:
+    docker:
+      - image: circleci/python:3.7
+        environment:
+          AWS_SQS_ENDPOINT_URL: "http://localstack:4001/"
+          AWS_S3_ENDPOINT_URL: "http://localstack:4002/"
+          AWS_SNS_ENDPOINT_URL: "http://localstack:4003/"
+          AWS_DEFAULT_REGION: "eu-west-1"
+          AWS_ACCESS_KEY_ID: "test"
+          AWS_SECRET_ACCESS_KEY: "test"
+          AWS_SQS_QUEUE_NAME: "request-queue"
+          AWS_SNS_TOPIC_ARN: "arn:aws:sns:us-east-1:000000000000:topicarn"
+      - image: localstack/localstack
+        name: localstack
+        environment:
+          SERVICES: "sqs:4001,s3:4002,sns:4003"
+          DEBUG: 1
+    steps:
+      - checkout
+      - run: ./.circleci/scripts/setup-test.sh
+      - run: pytest -sv
