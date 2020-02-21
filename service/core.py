@@ -1,4 +1,5 @@
 import io
+import os
 import json
 from pydub.exceptions import CouldntDecodeError, CouldntEncodeError
 from botocore.exceptions import ClientError
@@ -6,7 +7,7 @@ from botocore.exceptions import ClientError
 from .validators import (
     validate_message,
     check_error_list,
-    validate_input_file,
+    validate_input_format,
     validate_output_formats
 )
 
@@ -16,6 +17,7 @@ from .settings import (
     AWS_SNS_TOPIC_ARN
 )
 from .transcoder import transcode
+from .helpers import get_format
 
 
 def process_message(message):
@@ -31,11 +33,18 @@ def process_message(message):
     if not validate_message(message):
         raise Exception(f"Invalid Message: {message}")
 
+    file_name = download(create_s3_resource(), message["input"])
+    format = get_format(file_name)
+
+    if not validate_input_format(format):
+        raise Exception(f'Invalid Input Format: {format}')
+
     for output in message["outputs"]:
+        if not validate_output_formats(output["format"]):
+            raise Exception(f'Invalid Output Format: {output["format"]}')
+
         try:
-            file = download(create_s3_resource(), message["input"])
-            validate_output_formats(output["format"])
-            transcoded = transcode(file, output)
+            transcoded = transcode(file_name, output)
             upload(create_s3_resource(), transcoded, output)
         except ClientError as e:
             errors.append(e.response["Error"]["Message"])
@@ -48,16 +57,6 @@ def process_message(message):
 
         except CouldntEncodeError as e:
             msg = "Coudln't encode asked format due to incompatibility."
-            errors.append(msg)
-            Service_Logger.exception(e)
-
-        except IndexError as e:
-            msg = "Transcoding could not start. Format not found."
-            errors.append(msg)
-            Service_Logger.exception(e)
-
-        except KeyError as e:
-            msg = "Transcoding could not start. Format not found."
             errors.append(msg)
             Service_Logger.exception(e)
 
@@ -76,6 +75,8 @@ def process_message(message):
         "error" if check_error_list(errors) else "success",
         errors if check_error_list(errors) else None
     )
+
+    remove_file(file_name)
 
 
 def upload(resource, transcoded, output):
@@ -97,14 +98,13 @@ def download(resource, input):
     bucket_name = input['bucket']
     file_name = input['key']
 
-    file_object = resource.meta.client.get_object(
-        Bucket=bucket_name,
-        Key=file_name
+    resource.meta.client.download_file(
+        bucket_name,
+        file_name,
+        file_name
     )
 
-    file = file_object["Body"].read()
-    tempFile = io.BytesIO(file)
-    return tempFile
+    return file_name
 
 
 def callback(topic_arn, input, outputs, status, errors=None):
@@ -121,3 +121,7 @@ def callback(topic_arn, input, outputs, status, errors=None):
             }
             )
         )
+
+
+def remove_file(file_name):
+    os.remove(file_name)

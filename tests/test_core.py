@@ -1,7 +1,15 @@
 import io
 import pytest
 import json
-from service.core import upload, download, callback, process_message
+
+from service.core import (
+    upload,
+    download,
+    callback,
+    process_message,
+    remove_file
+)
+
 from uuid import uuid4
 from service.aws_boto3 import create_s3_resource, create_sqs_resource
 from botocore.exceptions import ClientError
@@ -27,7 +35,9 @@ def test_download(s3_bucket):
 
     subject = download(create_s3_resource(), payload)
 
-    assert subject.read() == body
+    with open(subject, 'rb') as f:
+        handle = io.BytesIO(f.read())
+        assert handle.read() == body
 
 
 @mock.patch('service.loggers.AWS_Logger')
@@ -154,8 +164,9 @@ def test_upload_download_data_assertion(s3_bucket):
         assert obj.key == key
 
     downloaded = download(create_s3_resource(), payload)
-
-    assert downloaded.read() == file_to_upload.read()
+    with open(downloaded, 'rb') as f:
+        handle = io.BytesIO(f.read())
+        assert handle.read() == file_to_upload.read()
 
 
 def test_callback_success(sns_topic_arn):
@@ -215,14 +226,20 @@ def test_callback_errors(sns_topic_arn):
     callback(sns_topic_arn, input, outputs, status, errors)
 
 
+@mock.patch("service.core.remove_file")
 @mock.patch("service.core.callback")
 @mock.patch("service.core.upload")
 @mock.patch("service.transcoder.transcode", return_value=io.BytesIO)
 @mock.patch("service.core.download", return_value=io.BytesIO)
+@mock.patch("service.core.validate_input_format", return_value=True)
+@mock.patch("service.core.get_format")
 @mock.patch("service.validators.validate_message")
 def test_process_message(
-    mock_validate_message, mock_download, mock_transcode,
-        mock_upload, mock_callback, sqs_queue):
+    mock_validate_message, mock_get_format,
+    mock_validate_input_format, mock_download,
+    mock_transcode, mock_upload, mock_callback,
+    mock_remove_file, sqs_queue
+):
 
     """
     Test for process_message many different calls to other functions.
@@ -240,10 +257,11 @@ def test_process_message(
     )
 
     loaded_message_body = json.loads(messages['Messages'][0]['Body'])
-
     process_message(loaded_message_body)
 
     assert mock_validate_message.called_once_with(loaded_message_body)
+    assert mock_get_format.call_count == 1
+    assert mock_validate_input_format.call_count == 1
 
     assert mock_download.called_with(
         create_s3_resource(),
@@ -262,6 +280,9 @@ def test_process_message(
             io.BytesIO(),
             loaded_message_body[output]
             )
+
+    assert mock_callback.call_count == 1
+    assert mock_remove_file.call_count == 1
 
 
 @mock.patch("service.core.callback")
@@ -299,3 +320,53 @@ def test_process_message_bad_message_keys(
         assert mock_transcode.call_count == 0
         assert mock_upload.call_count == 0
         assert mock_callback.call_count == 1
+
+
+def test_remove_file(s3_bucket):
+
+    key = str(uuid4())
+    bucket = s3_bucket.name
+
+    payload = {
+        "key": key,
+        "bucket": bucket
+    }
+
+    some_data = b"test123"
+    file_to_upload = io.BytesIO(some_data)
+
+    upload(create_s3_resource(), file_to_upload, payload)
+
+    subject = download(create_s3_resource(), payload)
+
+    with open(subject, 'rb') as f:
+        handle = io.BytesIO(f.read())
+        assert handle.read() == some_data
+
+    remove_file(subject)
+
+
+def test_remove_file_not_found(s3_bucket):
+
+    key = str(uuid4())
+    bucket = s3_bucket.name
+
+    payload = {
+        "key": key,
+        "bucket": bucket
+    }
+
+    some_data = b"test123"
+    file_to_upload = io.BytesIO(some_data)
+
+    upload(create_s3_resource(), file_to_upload, payload)
+
+    subject = download(create_s3_resource(), payload)
+
+    with open(subject, 'rb') as f:
+        handle = io.BytesIO(f.read())
+        assert handle.read() == some_data
+
+    with pytest.raises(FileNotFoundError):
+        remove_file("ThisPathDoesNotExist/file.example")
+    remove_file(subject)

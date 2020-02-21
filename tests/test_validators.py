@@ -4,7 +4,9 @@ from service.validators import (
     validate_message,
     validate_message_keys,
     validate_input_keys,
-    validate_output_keys
+    validate_output_keys,
+    validate_output_formats,
+    validate_input_format
 )
 
 
@@ -210,3 +212,23 @@ def test_validate_message():
     }
 
     assert validate_message(payload) is True
+
+
+def test_validate_output_formats():
+    supported_format = "WAV"
+    assert validate_output_formats(supported_format) is True
+
+
+def test_validate_output_returns_false():
+    unsupported_format = "M4A"
+    assert validate_output_formats(unsupported_format) is False
+
+
+def test_validate_input_format():
+    supported_format = "WAV"
+    assert validate_input_format(supported_format) is True
+
+
+def test_validate_input_returns_false():
+    unsupported_format = "M4A"
+    assert validate_input_format(unsupported_format) is False

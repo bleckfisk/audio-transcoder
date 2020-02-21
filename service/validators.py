@@ -2,9 +2,24 @@
 A file containing validator functions to make sure
 the input from SQS Message is correct.
 
-Every function follows the logic of checking the keys and
+Every function follows the logic of checking the values and
 returning True or False depending on whether or not they are correct.
 """
+
+supported_input_formats = [
+    "WAV",
+    "FLAC",
+    "MP3",
+    "AIFF",
+    "AAC",
+    "OGG",
+    "OPUS",
+    "TS",
+    "WMA",
+    "FLV",
+    "OGV",
+    "AC3"
+]
 
 supported_output_formats = [
     "WAV",
@@ -45,19 +60,9 @@ def check_error_list(errors):
     return len(errors) > 0
 
 
-def validate_input_file():
-    """
-    has to download file to system to get this
-
-    pros: can validate, less exceptions in core
-
-    cons: clean up afterwards
-    """
-    pass
+def validate_input_format(format):
+    return format.upper() in supported_input_formats
 
 
 def validate_output_formats(format):
-    """
-    Accept output format string and validate, return true if valid
-    """
-    return format in supported_output_formats
+    return format.upper() in supported_output_formats
