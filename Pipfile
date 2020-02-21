@@ -1,0 +1,18 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+localstack = "*"
+
+[packages]
+pydub = "*"
+boto3 = "*"
+pytest = "*"
+pytest-cov = "*"
+coverage = "*"
+flake8 = "*"
+
+[requires]
+python_version = "3.7"

@@ -1,0 +1,40 @@
+
+version: "3.3"
+  
+services:
+
+  localstack:
+    image: localstack/localstack
+    container_name: localstack
+    ports:
+      - "4000-4002:4000-4002"
+    environment:
+      SERVICES: "sqs:4000,s3:4001,sns:4002"
+      DEBUG: 1
+
+  transcoder:
+    image: audio-transcoder
+    container_name: transcoder
+    build:
+      context: .
+      args:
+        PIPENV_ARGS: "--dev"
+    command: ["python", "-m", "service"]
+    depends_on:
+      - localstack
+    volumes:
+      - ./service:/app/service
+      - ./tests:/app/tests
+    environment:
+      AWS_SQS_ENDPOINT_URL: "http://localstack:4000/"
+      AWS_S3_ENDPOINT_URL: "http://localstack:4001/"
+      AWS_SNS_ENDPOINT_URL: "http://localstack:4002/"
+      AWS_SQS_QUEUE_NAME: "message-queue-name"
+      AWS_SNS_TOPIC_ARN: "arn:aws:sns:us-east-1:000000000000:topicarn"
+      AWS_DEFAULT_REGION: "eu-west-1"
+      AWS_ACCESS_KEY_ID: "test"
+      AWS_SECRET_ACCESS_KEY: "test"
+    
+volumes:
+  service:
+  tests:
