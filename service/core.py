@@ -2,7 +2,14 @@ import io
 import json
 from pydub.exceptions import CouldntDecodeError, CouldntEncodeError
 from botocore.exceptions import ClientError
-from .validators import validate_message, check_error_list
+
+from .validators import (
+    validate_message,
+    check_error_list,
+    validate_input_file,
+    validate_output_formats
+)
+
 from .aws_boto3 import create_s3_resource, create_sns_resource, publish_sns
 from .loggers import AWS_Logger, Service_Logger
 from .settings import (
@@ -27,6 +34,7 @@ def process_message(message):
     for output in message["outputs"]:
         try:
             file = download(create_s3_resource(), message["input"])
+            validate_output_formats(output["format"])
             transcoded = transcode(file, output)
             upload(create_s3_resource(), transcoded, output)
         except ClientError as e:

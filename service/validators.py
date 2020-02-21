@@ -6,6 +6,13 @@ Every function follows the logic of checking the keys and
 returning True or False depending on whether or not they are correct.
 """
 
+supported_output_formats = [
+    "WAV",
+    "FLAC",
+    "MP3",
+    "AIFF"
+]
+
 
 def validate_message(data):
     try:
@@ -36,3 +43,21 @@ def validate_output_keys(outputs):
 
 def check_error_list(errors):
     return len(errors) > 0
+
+
+def validate_input_file():
+    """
+    has to download file to system to get this
+
+    pros: can validate, less exceptions in core
+
+    cons: clean up afterwards
+    """
+    pass
+
+
+def validate_output_formats(format):
+    """
+    Accept output format string and validate, return true if valid
+    """
+    return format in supported_output_formats
