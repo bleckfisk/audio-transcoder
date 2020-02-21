@@ -1,4 +1,4 @@
-# Bleckfisk's Audio Transcoder (Work in Progress)
+# Bleckfisk's Audio Transcoder (Under Development)
 
 ## About
 
