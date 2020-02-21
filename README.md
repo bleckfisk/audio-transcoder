@@ -83,6 +83,7 @@ be done and reports back to SNS Topic with information of whether or not the job
   
 ``` 
   - supported data = {
+      "session_id": "unique session identification string to separate processes, chosen of your liking",
       "input": {
         "key": "s3 bucket key to download",
         "bucket": "bucket name where s3 key exists" 
@@ -106,6 +107,7 @@ be done and reports back to SNS Topic with information of whether or not the job
 
 ```
 callback = {
+  "session_id": "unique identification string of your choice accoring to message",
   "from": {the input data that was sent to the transcoder},
   "to": {the output data that was sent to the transcoder},
   "status": "a string containing either success or error depending on exceptions during the job",
