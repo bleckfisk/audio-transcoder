@@ -13,6 +13,7 @@ the tests get data to work with in isolation
 
 
 VALID_DATA = {
+    "id": str(uuid4()),
     "input": {
         "key": "file_example_WAV_10MG.wav",
         "bucket": "testbucket"
@@ -32,6 +33,7 @@ VALID_DATA = {
 }
 
 INVALID_DATA = {
+    "id": "123",
     "bad_input": {
         "key": "file_example_WAV_10MG.wav",
         "bucket": "testbucket"

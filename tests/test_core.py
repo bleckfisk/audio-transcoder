@@ -168,6 +168,8 @@ def test_callback_success(sns_topic_arn):
 
     output_key = str(uuid4())
 
+    id = str(uuid4())
+
     input = {
         "key": input_key,
         "bucket": bucket
@@ -184,7 +186,7 @@ def test_callback_success(sns_topic_arn):
 
     errors = None
 
-    callback(sns_topic_arn, input, outputs, status, errors)
+    callback(id, sns_topic_arn, input, outputs, status, errors)
 
 
 def test_callback_errors(sns_topic_arn):
@@ -195,6 +197,7 @@ def test_callback_errors(sns_topic_arn):
     input_key = str(uuid4())
     bucket = str(uuid4())
     output_key = str(uuid4())
+    id = str(uuid4())
 
     input = {
         "key": input_key,
@@ -212,7 +215,7 @@ def test_callback_errors(sns_topic_arn):
 
     errors = [str(uuid4()), str(uuid4()), str(uuid4())]
 
-    callback(sns_topic_arn, input, outputs, status, errors)
+    callback(id, sns_topic_arn, input, outputs, status, errors)
 
 
 @mock.patch("service.core.callback")

@@ -20,7 +20,7 @@ def validate_message(data):
 
 
 def validate_message_keys(body):
-    return list(body.keys()) == ["input", "outputs"]
+    return list(body.keys()) == ["id", "input", "outputs"]
 
 
 def validate_input_keys(input):
