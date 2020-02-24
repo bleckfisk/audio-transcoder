@@ -62,7 +62,7 @@ def process_message(message):
             Service_Logger.exception(e)
 
     callback(
-        message["session_id"],
+        message["id"],
         AWS_SNS_TOPIC_ARN,
         message["input"],
         message["outputs"],
@@ -100,14 +100,14 @@ def download(resource, input):
     return tempFile
 
 
-def callback(session_id, topic_arn, input, outputs, status, errors=None):
+def callback(id, topic_arn, input, outputs, status, errors=None):
     """takes the summary of the job and publishes it to SNS"""
     publish_sns(
         create_sns_resource(),
         topic_arn,
         json.dumps(
             {
-                "session_id": session_id,
+                "id": id,
                 "from": input,
                 "to": outputs,
                 "status": status,

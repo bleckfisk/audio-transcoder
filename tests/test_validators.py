@@ -25,7 +25,7 @@ def test_check_error_list():
 def test_validate_message_keys():
 
     payload = {
-        "session_id": str(uuid4()),
+        "id": str(uuid4()),
         "input": {
             "key": str(uuid4()),
             "bucket": str(uuid4())
@@ -62,7 +62,7 @@ def test_validate_message_keys_wrong_order_returns_false():
                 "bucket": str(uuid4())
             }
         ],
-        "session_id": str(uuid4()),
+        "id": str(uuid4()),
         "input": {
             "key": str(uuid4()),
             "bucket": str(uuid4())
@@ -100,7 +100,7 @@ def test_validate_message_keys_returns_false():
 def test_validate_input_keys():
 
     payload = {
-        "session_id": str(uuid4()),
+        "id": str(uuid4()),
         "input": {
             "key": str(uuid4()),
             "bucket": str(uuid4())
@@ -125,7 +125,7 @@ def test_validate_input_keys():
 def test_validate_input_keys_returns_false():
 
     payload = {
-        "session_id": str(uuid4()),
+        "id": str(uuid4()),
         "input": {
             "song_id": str(uuid4()),
             "s3": str(uuid4())
@@ -150,7 +150,7 @@ def test_validate_input_keys_returns_false():
 def test_validate_output_keys():
 
     payload = {
-        "session_id": str(uuid4()),
+        "id": str(uuid4()),
         "input": {
             "key": str(uuid4()),
             "bucket": str(uuid4())
@@ -174,7 +174,7 @@ def test_validate_output_keys():
 def test_validate_output_keys_returs_false():
 
     payload = {
-        "session_id": str(uuid4()),
+        "id": str(uuid4()),
         "input": {
             "key": str(uuid4()),
             "bucket": str(uuid4())
@@ -198,7 +198,7 @@ def test_validate_output_keys_returs_false():
 def test_validate_message():
 
     payload = {
-        "session_id": str(uuid4()),
+        "id": str(uuid4()),
         "input": {
             "key": str(uuid4()),
             "bucket": str(uuid4())

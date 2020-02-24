@@ -31,7 +31,7 @@ def setup_no_exceptions():
         bucket = s3.Bucket(bucket_name)
 
     data = {
-        "session_id": str(uuid4()),
+        "id": str(uuid4()),
         "input": {
             "key": "unique_id.aiff",
             "bucket": bucket_name
@@ -99,7 +99,7 @@ def setup_error():
         bucket = s3.Bucket(bucket_name)
 
     data = {
-        "session_id": str(uuid4()),
+        "id": str(uuid4()),
         "input": {
             "key": str(uuid4()),
             "bucket": bucket_name

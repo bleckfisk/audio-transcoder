@@ -58,7 +58,7 @@ def listen_sqs_queue(
             except Exception as e:
                 from .core import callback
                 callback(
-                    message_body["session_id"],
+                    message_body["id"],
                     AWS_SNS_TOPIC_ARN,
                     message_body,
                     message_body,
