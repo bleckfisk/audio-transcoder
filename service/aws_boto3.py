@@ -60,8 +60,6 @@ def listen_sqs_queue(
                 callback(
                     message_body["id"],
                     AWS_SNS_TOPIC_ARN,
-                    message_body,
-                    message_body,
                     "error",
                     (f"Invalid Message: {message_body}")
                 )

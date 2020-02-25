@@ -163,30 +163,14 @@ def test_callback_success(sns_topic_arn):
     Test proves that callback is not throwing exceptions
     when errors-argument == None
     """
-    input_key = str(uuid4())
-    bucket = str(uuid4())
-
-    output_key = str(uuid4())
 
     id = str(uuid4())
-
-    input = {
-        "key": input_key,
-        "bucket": bucket
-    }
-
-    outputs = [
-        {
-            "key": output_key,
-            "bucket": bucket
-        }
-    ]
 
     status = "success"
 
     errors = None
 
-    callback(id, sns_topic_arn, input, outputs, status, errors)
+    callback(id, sns_topic_arn, status, errors)
 
 
 def test_callback_errors(sns_topic_arn):
@@ -194,28 +178,14 @@ def test_callback_errors(sns_topic_arn):
     Test proves that callback() is not throwing exceptions
     when errors-list is passed as argument
     """
-    input_key = str(uuid4())
-    bucket = str(uuid4())
-    output_key = str(uuid4())
+
     id = str(uuid4())
-
-    input = {
-        "key": input_key,
-        "bucket": bucket
-    }
-
-    outputs = [
-        {
-            "key": output_key,
-            "bucket": bucket
-        }
-    ]
 
     status = "error"
 
     errors = [str(uuid4()), str(uuid4()), str(uuid4())]
 
-    callback(id, sns_topic_arn, input, outputs, status, errors)
+    callback(id, sns_topic_arn, status, errors)
 
 
 @mock.patch("service.core.callback")

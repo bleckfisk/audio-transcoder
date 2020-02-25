@@ -64,8 +64,6 @@ def process_message(message):
     callback(
         message["id"],
         AWS_SNS_TOPIC_ARN,
-        message["input"],
-        message["outputs"],
         "error" if check_error_list(errors) else "success",
         errors if check_error_list(errors) else None
     )
@@ -100,7 +98,7 @@ def download(resource, input):
     return tempFile
 
 
-def callback(id, topic_arn, input, outputs, status, errors=None):
+def callback(id, topic_arn, status, errors=None):
     """takes the summary of the job and publishes it to SNS"""
     publish_sns(
         create_sns_resource(),
@@ -108,8 +106,6 @@ def callback(id, topic_arn, input, outputs, status, errors=None):
         json.dumps(
             {
                 "id": id,
-                "from": input,
-                "to": outputs,
                 "status": status,
                 "errors": errors
             }
