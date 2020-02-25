@@ -10,7 +10,7 @@ from service.aws_boto3 import (
 )
 
 from service.settings import (
-    AWS_SQS_QUEUE_NAME
+    REQUEST_QUEUE_NAME
 )
 
 """
@@ -27,7 +27,7 @@ letting initiator know what went wrong.
 def test_service(mock_publish_sns, setup_no_exceptions):
     listen_sqs_queue(
         create_sqs_resource(),
-        AWS_SQS_QUEUE_NAME,
+        REQUEST_QUEUE_NAME,
         process_message,
         True
     )
@@ -73,7 +73,7 @@ def test_service_fails_callback_still_runs(mock_publish_sns, setup_error):
 
     listen_sqs_queue(
         create_sqs_resource(),
-        AWS_SQS_QUEUE_NAME,
+        REQUEST_QUEUE_NAME,
         process_message,
         True
     )

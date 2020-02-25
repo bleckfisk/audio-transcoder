@@ -14,7 +14,7 @@ from .validators import (
 from .aws_boto3 import create_s3_resource, create_sns_resource, publish_sns
 from .loggers import AWS_Logger, Service_Logger
 from .settings import (
-    AWS_SNS_TOPIC_ARN
+    RESPONSE_TOPIC_ARN
 )
 from .transcoder import transcode
 from .helpers import get_format
@@ -70,7 +70,7 @@ def process_message(message):
 
     callback(
         message["id"],
-        AWS_SNS_TOPIC_ARN,
+        RESPONSE_TOPIC_ARN,
         "error" if check_error_list(errors) else "success",
         errors if check_error_list(errors) else None
     )

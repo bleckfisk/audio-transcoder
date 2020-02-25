@@ -5,7 +5,7 @@ from .settings import (
     AWS_SQS_ENDPOINT_URL,
     AWS_S3_ENDPOINT_URL,
     AWS_SNS_ENDPOINT_URL,
-    AWS_SNS_TOPIC_ARN
+    RESPONSE_TOPIC_ARN
 )
 
 from .loggers import Service_Logger
@@ -59,7 +59,7 @@ def listen_sqs_queue(
                 from .core import callback
                 callback(
                     message_body["id"],
-                    AWS_SNS_TOPIC_ARN,
+                    RESPONSE_TOPIC_ARN,
                     "error",
                     (f"Invalid Message: {message_body}")
                 )

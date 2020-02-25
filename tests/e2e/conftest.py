@@ -10,8 +10,8 @@ from service.aws_boto3 import (
     )
 
 from service.settings import (
-    AWS_SNS_TOPIC_ARN,
-    AWS_SQS_QUEUE_NAME,
+    RESPONSE_TOPIC_ARN,
+    REQUEST_QUEUE_NAME,
 )
 
 
@@ -64,14 +64,14 @@ def setup_no_exceptions():
     s3.meta.client.upload_file(file, bucket_name, data["input"]["key"])
 
     sqs = create_sqs_resource()
-    queue = sqs.meta.client.create_queue(QueueName=AWS_SQS_QUEUE_NAME)
+    queue = sqs.meta.client.create_queue(QueueName=REQUEST_QUEUE_NAME)
     sqs.meta.client.send_message(
         QueueUrl=queue.get("QueueUrl"),
         MessageBody=json.dumps(data)
     )
 
     sns = create_sns_resource()
-    topic_arn = AWS_SNS_TOPIC_ARN
+    topic_arn = RESPONSE_TOPIC_ARN
     topic_name = get_topic_name_by_arn(topic_arn)
     response = sns.meta.client.create_topic(
         Name=topic_name
@@ -132,14 +132,14 @@ def setup_error():
     s3.meta.client.upload_file(file, bucket_name, data["input"]["key"])
 
     sqs = create_sqs_resource()
-    queue = sqs.meta.client.create_queue(QueueName=AWS_SQS_QUEUE_NAME)
+    queue = sqs.meta.client.create_queue(QueueName=REQUEST_QUEUE_NAME)
     sqs.meta.client.send_message(
         QueueUrl=queue.get("QueueUrl"),
         MessageBody=json.dumps(data)
     )
 
     sns = create_sns_resource()
-    topic_arn = AWS_SNS_TOPIC_ARN
+    topic_arn = RESPONSE_TOPIC_ARN
     topic_name = get_topic_name_by_arn(topic_arn)
     response = sns.meta.client.create_topic(
         Name=topic_name
