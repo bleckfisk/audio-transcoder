@@ -1,7 +1,6 @@
 import io
 import os
 import json
-from pydub.exceptions import CouldntDecodeError, CouldntEncodeError
 from botocore.exceptions import ClientError
 
 from .validators import (
@@ -49,16 +48,6 @@ def process_message(message):
         except ClientError as e:
             errors.append(e.response["Error"]["Message"])
             AWS_Logger.exception(e)
-
-        except CouldntDecodeError as e:
-            msg = "Coudln't decode due to bad format or corrupt data."
-            errors.append(msg)
-            Service_Logger.exception(e)
-
-        except CouldntEncodeError as e:
-            msg = "Coudln't encode asked format due to incompatibility."
-            errors.append(msg)
-            Service_Logger.exception(e)
 
         except Exception as e:
             """Unforseen exceptions should not break the process,
