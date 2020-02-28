@@ -295,6 +295,80 @@ def test_process_message_bad_message_keys(
         assert mock_callback.call_count == 1
 
 
+@mock.patch("service.core.callback")
+@mock.patch("service.core.upload")
+@mock.patch("service.transcoder.transcode", return_value=io.BytesIO)
+@mock.patch("service.core.download", return_value=io.BytesIO)
+@mock.patch("service.validators.validate_input_format", return_value=False)
+def test_process_message_bad_input_format(
+    mock_validate_input_format, mock_download, mock_transcode,
+        mock_upload, mock_callback, sqs_queue):
+
+    """
+    This test proves that when input format is bad
+    we don't try to process them, instead we handle the exception and
+    calls callback() accordingly.
+    """
+
+    resource = create_sqs_resource()
+
+    messages = resource.meta.client.receive_message(
+        QueueUrl=sqs_queue.get("QueueUrl"),
+        MaxNumberOfMessages=1,
+        WaitTimeSeconds=0
+    )
+
+    loaded_message_body = json.loads(messages['Messages'][0]['Body'])
+
+    for output in loaded_message_body["outputs"]:
+        output["format"] = 'M4A'
+
+    with pytest.raises(Exception):
+        process_message(loaded_message_body)
+        assert mock_validate_input_format.call_count == 1
+        assert mock_download.call_count == 0
+        assert mock_transcode.call_count == 0
+        assert mock_upload.call_count == 0
+        assert mock_callback.call_count == 1
+
+
+@mock.patch("service.core.callback")
+@mock.patch("service.core.upload")
+@mock.patch("service.transcoder.transcode", return_value=io.BytesIO)
+@mock.patch("service.core.download", return_value=io.BytesIO)
+@mock.patch("service.validators.validate_output_formats")
+def test_process_message_bad_output_formats(
+    mock_validate_output_formats, mock_download, mock_transcode,
+        mock_upload, mock_callback, sqs_queue):
+
+    """
+    This test proves that when input format is bad
+    we don't try to process them, instead we handle the exception and
+    calls callback() accordingly.
+    """
+
+    resource = create_sqs_resource()
+
+    messages = resource.meta.client.receive_message(
+        QueueUrl=sqs_queue.get("QueueUrl"),
+        MaxNumberOfMessages=1,
+        WaitTimeSeconds=0
+    )
+
+    loaded_message_body = json.loads(messages['Messages'][0]['Body'])
+
+    for output in loaded_message_body["outputs"]:
+        output["output"] = 'M4A'
+
+    with pytest.raises(Exception):
+        process_message(loaded_message_body)
+        assert mock_validate_output_formats.call_count == 1
+        assert mock_download.call_count == 0
+        assert mock_transcode.call_count == 0
+        assert mock_upload.call_count == 0
+        assert mock_callback.call_count == 1
+
+
 def test_remove_file(s3_bucket):
 
     key = str(uuid4())
@@ -343,3 +417,4 @@ def test_remove_file_not_found(s3_bucket):
     with pytest.raises(FileNotFoundError):
         remove_file("ThisPathDoesNotExist/file.example")
     remove_file(subject)
+
