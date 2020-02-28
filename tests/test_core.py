@@ -319,9 +319,7 @@ def test_process_message_bad_input_format(
     )
 
     loaded_message_body = json.loads(messages['Messages'][0]['Body'])
-
-    for output in loaded_message_body["outputs"]:
-        output["format"] = 'M4A'
+    loaded_message_body["input"]["format"] = "M4A"
 
     with pytest.raises(Exception):
         process_message(loaded_message_body)
