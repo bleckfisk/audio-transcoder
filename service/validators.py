@@ -14,7 +14,7 @@ supported_input_formats = [
     "AAC",
     "OGG",
     "OPUS",
-    "TS",
+    "MPEGTS",
     "WMA",
     "FLV",
     "OGV",
