@@ -66,7 +66,7 @@ These steps can be done in a multiple ways depending on how your production envi
 
     - Boto3 will default to the actual endpoints of AWS if the endpoint variables are unset which means that endpoints shouldn't be needed in production.  
 
-  - Build Transcoder Image from Dockerfile
+  - cd into project folder and build Transcoder Image from Dockerfile
     ```docker build .```
 
   - Create Container from Image
