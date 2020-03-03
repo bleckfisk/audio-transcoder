@@ -9,4 +9,14 @@ AWS_DEFAULT_REGION = env.get("AWS_DEFAULT_REGION")
 AWS_ACCESS_KEY_ID = env.get("AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY = env.get("AWS_SECRET_ACCESS_KEY")
 
-ffmpeg_logging = True
+
+"""
+This ffmpeg_logging variable is a switch
+to turn the encode/decode logging on and off.
+
+True = ON
+False = OFF
+
+Default = OFFs
+"""
+ffmpeg_logging = False

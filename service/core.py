@@ -82,7 +82,7 @@ def upload(resource, transcoded, output):
 
 
 def download(resource, input):
-    """downloads the file specified in input and return it as BytesIO object"""
+    """downloads the file specified in input and returns the name of the file as a string"""
     bucket_name = input['bucket']
     file_name = input['key']
 
