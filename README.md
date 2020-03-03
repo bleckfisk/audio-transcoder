@@ -109,15 +109,16 @@ be done and reports back to SNS Topic with information of whether or not the job
 callback = {
   "id": "unique identification string of your choice accoring to message",
   "status": "a string containing either success or error depending on exceptions during the job",
-  "errors": None or {[errormessage]}, dending on exceptions during the job. 
+  "errors": None or {Message]}, allowing you to see your message and control it. 
 }
 ```
 
 ## Supported Formats
+ - Following formats can be decoded (supported as inputs)
+   - WAV, FLAC, MP3, AIFF, AAC, OGG, OPUS, WMA, FLV, OGV, AC3
+ - Following formats can be encoded (suppoted as outputs)
+   - WAV, FLAC, MP3, AIFF
+  
+ - This software uses FFMPEG with libavcodec to decode and encode files. Visit their website for full information about the codec and what it supports. If you need support, you can either support a pull request providing it or fork the repository and add it in your repository.
+   - https://ffmpeg.org/documentation.html
 
- - This software uses FFMPEG with libavcodec to decode and encode files. Visit their website for full information about the codec and what it supports.
-  - https://ffmpeg.org/documentation.html
-
- - Currently I only test the following supported formats thoroughly.
-    - Wav, aiff, flac, mp3
-    - More formats can be supported through the codec, for instance some video formats can be transcoded inte audio-only-files, but as the test data is limited I only test the following formats to work.
