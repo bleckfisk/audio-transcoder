@@ -41,7 +41,7 @@ be done and reports back to SNS Topic with information of whether or not the job
   - This will build the transcoder and localstack, test the transcoder and then run it, leaving it on for use. 
   - When transcoder-container is up it will directly start looking for messages in SQS Queue and is by then ready to be used.
     
- - If you have turned the containers off with ```docker-compose down```, you can start them again with ```make run```
+ - If you have turned the containers off with ```docker-compose down``` or ```stop```, you can start them again with ```make run```
 
  #### Additional shorthandss
   - ```make localstack```: Runs the localstack container.
