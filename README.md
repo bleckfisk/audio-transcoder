@@ -104,7 +104,7 @@ These steps can be done in a multiple ways depending on how your production envi
     
 - Please observe that SQS Messages Body can only contain strings, transcoder will parse the string to json and handle it accordingly. 
     
-- After transcoder has processed the message and done the job, it will publish an object like below to the given SNS Topic.
+- After transcoder has processed the message and done the job, it will publish an object-string like below to the given SNS Topic.
 
 ```
 callback = {
