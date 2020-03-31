@@ -1,4 +1,4 @@
-# Bleckfisk's Audio Transcoder
+# Audio Transcoder
 
 ## About
 
