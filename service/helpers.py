@@ -1,4 +1,5 @@
 from pydub.utils import mediainfo
+from .exceptions import MediaInfoIsEmptyError
 
 """
 This file is for helper functions that should
@@ -16,4 +17,8 @@ def get_format(file_name):
     Used for validating formats through validators.py
     """
     info = mediainfo(file_name)
+
+    if "format_name" not in info:
+        raise MediaInfoIsEmptyError("Could not fetch format")
+    
     return info["format_name"].upper()
