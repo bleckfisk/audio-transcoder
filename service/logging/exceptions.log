@@ -1,6 +1,0 @@
-# Logfile for exceptions from Bleckfisk Audio Transcoder
-# Format: Asctime, Logger Name, Logger Level, Message 
-
-
-Note: Tests will append to this file so make sure you don't mix up actual errors with test errors.
------------------------------------------------------------
