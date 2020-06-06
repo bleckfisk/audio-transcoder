@@ -2,7 +2,7 @@ import io
 import os
 import json
 from botocore.exceptions import ClientError
-
+from .exceptions import AlreadyExistsError
 from .validators import (
     validate_message,
     check_error_list,
@@ -72,13 +72,23 @@ def upload(resource, transcoded, output):
     bucket = output["bucket"]
     key = output["key"]
 
-    file = io.BytesIO(transcoded.read())
+    try:
+        resource.meta.client.head_object(
+            Bucket=bucket,
+            Key=key
+        )
+    except:
+        file = io.BytesIO(transcoded.read())
+        resource.meta.client.upload_fileobj(
+            file,
+            Bucket=bucket,
+            Key=key,
+        )
+        return
+    raise AlreadyExistsError("Key already exists in bucket")
 
-    resource.meta.client.upload_fileobj(
-        file,
-        Bucket=bucket,
-        Key=key,
-    )
+
+    
 
 
 def download(resource, input):

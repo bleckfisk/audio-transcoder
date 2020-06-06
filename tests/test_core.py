@@ -14,6 +14,7 @@ from uuid import uuid4
 from service.aws_boto3 import create_s3_resource, create_sqs_resource
 from botocore.exceptions import ClientError
 from unittest import mock
+from service.exceptions import AlreadyExistsError
 
 
 def test_download(s3_bucket):
@@ -133,6 +134,30 @@ def test_upload_bucket_not_exists(mock_AWS_Logger, s3_bucket):
     file_to_upload = io.BytesIO(some_data)
 
     with pytest.raises(ClientError):
+        upload(create_s3_resource(), file_to_upload, payload)
+        assert mock_AWS_Logger.call_count == 1
+
+@mock.patch('service.loggers.AWS_Logger')
+def test_upload_key_already_exists(mock_AWS_Logger, s3_bucket):
+    """
+    Test for exception handeling.
+    Will pass if exception is raised, and is raised because
+    the key tried to upload already exists
+    """
+
+    key = str(uuid4())
+    bucket = s3_bucket.name
+
+    payload = {
+        "key": key,
+        "bucket": bucket
+    }
+
+    some_data = b"test123"
+    file_to_upload = io.BytesIO(some_data)
+    upload(create_s3_resource(), file_to_upload, payload)
+
+    with pytest.raises(AlreadyExistsError):
         upload(create_s3_resource(), file_to_upload, payload)
         assert mock_AWS_Logger.call_count == 1
 
