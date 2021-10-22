@@ -8,11 +8,11 @@ localstack = "*"
 
 [packages]
 pydub = "*"
-boto3 = "*"
-pytest = "*"
-pytest-cov = "*"
-coverage = "*"
-flake8 = "*"
+boto3 = "1.19.2"
+pytest = "6.2.5"
+pytest-cov = "3.0.0"
+coverage = "6.0.2"
+flake8 = "4.0.1"
 
 [requires]
-python_version = "3.7"
+python_version = "3"
